@@ -2,14 +2,17 @@ PODS:
   - Bolts/Tasks (1.8.4)
   - Parse (1.15.3):
     - Bolts/Tasks (~> 1.8)
+  - SnapKit (4.0.0)
 
 DEPENDENCIES:
   - Parse
+  - SnapKit (~> 4.0.0)
 
 SPEC CHECKSUMS:
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   Parse: cdc0f1f975ee8be0409e66f21b05df4ae067047c
+  SnapKit: a42d492c16e80209130a3379f73596c3454b7694
 
-PODFILE CHECKSUM: c3cdd0d3286210910fe169daba9bf961cc979c72
+PODFILE CHECKSUM: 92befb89b0fb628a31ac72dc0fde60bb85a44044
 
 COCOAPODS: 1.4.0.beta.2

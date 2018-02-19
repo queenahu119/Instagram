@@ -7,6 +7,7 @@ target 'Instagram' do
 
   # Pods for Instagram
   pod 'Parse'
+  pod 'SnapKit', '~> 4.0.0'
 
   target 'InstagramTests' do
     inherit! :search_paths

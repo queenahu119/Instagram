@@ -8,13 +8,16 @@
 
 import UIKit
 import Parse
+import SnapKit
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
 
+    @IBOutlet weak var appName: UILabel!
     @IBOutlet weak var username: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var signupOrLoninButton: UIButton!
     @IBOutlet weak var switchLoninModeButton: UIButton!
+    @IBOutlet weak var noteLabel: UILabel!
 
     var signUpModeActive = false
 
@@ -25,10 +28,63 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        setUpUI()
+        
         password.delegate = self
 
         viewModel.initFetch()
+    }
+
+    func setUpUI() {
+
+        view.backgroundColor = UIColor.white
+
+        signupOrLoninButton.backgroundColor = UIColor(red: 58/255, green: 135/255, blue: 232/255, alpha: 1)
+        signupOrLoninButton.layer.cornerRadius = 5
+        signupOrLoninButton.layer.masksToBounds = true
+        signupOrLoninButton.tintColor = UIColor.white
+
+        appName.snp.makeConstraints { (make) -> Void in
+            make.centerX.equalTo(view)
+            make.height.equalTo(45)
+            make.bottom.equalTo(username.snp.top).offset(-20)
+        }
+
+        username.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(view).offset(20)
+            make.right.equalTo(view).offset(-20)
+            make.height.equalTo(45)
+            make.bottom.equalTo(password.snp.top).offset(-10)
+        }
+
+        password.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(username)
+            make.right.equalTo(username)
+            make.height.equalTo(50)
+            make.bottom.equalTo(view.snp.centerY).offset(-20)
+        }
+
+        signupOrLoninButton.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(username)
+            make.right.equalTo(username)
+            make.height.equalTo(45)
+            make.top.equalTo(password.snp.bottom).offset(20)
+        }
+
+        noteLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(view).offset(20)
+            make.height.equalTo(40)
+            make.right.equalTo(switchLoninModeButton.snp.left)
+            make.bottom.equalTo(view).offset(-8)
+        }
+
+        switchLoninModeButton.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(noteLabel.snp.right).offset(20)
+            make.height.equalTo(40)
+            make.width.equalTo(switchLoninModeButton.frame.size.width)
+            make.bottom.equalTo(noteLabel.snp.bottom)
+        }
+
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -98,6 +154,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
         if textField == password {
