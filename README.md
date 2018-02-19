@@ -4,15 +4,15 @@ Clone Instagram app with Parse Server
 
 ## features
 
-
 * Practice MVVM in Swift
 * Use Parse Server on AWS
+* Auto layout programmatically
 * Implement some function of Instagram
 	- Login/Signup
 	- Follow/Unfollow user
 	- Post new photo from Library/Camera
 	- See the following's post
-
+	- Write post's comment
 
 ## Getting Started
 
