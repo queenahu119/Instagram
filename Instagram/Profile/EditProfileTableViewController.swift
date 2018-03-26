@@ -8,13 +8,6 @@
 
 import UIKit
 
-//enum ACCOUNT_INFO: Int {
-//    case ACCOUNT_NAME = 0
-//    case ACCOUNT_USERNAME
-//    case ACCOUNT_UEMIL
-//    case ACCOUNT_BIO
-//}
-
 class EditProfileTableViewController: UITableViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate {
 
     let HeaderCellId = "HeaderCell"
@@ -26,7 +19,7 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
 
     let activityIndicator = UIActivityIndicatorView()
     
-    var headerView : UserHeaderTableViewCell?
+    var headerView : UserHeaderTableViewCell!
 
     lazy var viewModel: EditProfileModel = {
         return EditProfileModel()
@@ -109,18 +102,18 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
             headerView = (tableView.dequeueReusableCell(withIdentifier: HeaderCellId) as? UserHeaderTableViewCell)
 
             // default image
-            headerView?.profileImage.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
+            headerView.profileImage.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
 
             viewModel.getProfileImage(completion: { (image, response, error) in
-                self.headerView?.profileImage.image  = image
+                self.headerView.profileImage.image  = image
             })
 
-            headerView?.changePhotoButton.addTarget(self, action: #selector(onChangeProfilePhoto), for: .touchUpInside)
+            headerView.changePhotoButton.addTarget(self, action: #selector(onChangeProfilePhoto), for: .touchUpInside)
+
             return headerView
 
         } else {
 
-//            let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: )
             return nil
         }
     }

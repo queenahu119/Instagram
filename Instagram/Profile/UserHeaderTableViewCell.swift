@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class UserHeaderTableViewCell: UITableViewCell {
 
@@ -45,6 +46,17 @@ class UserHeaderTableViewCell: UITableViewCell {
         clipsToBounds = true
         addSubview(separatorLineView)
 
+        profileImage.snp.makeConstraints({ (make) in
+            make.centerX.equalTo(self.snp.centerX)
+            make.top.equalTo(self.snp.top).offset(20)
+            make.bottom.equalTo(changePhotoButton.snp.top).offset(-5)
+            make.size.equalTo(100)
+        })
+
+        changePhotoButton.snp.makeConstraints({ (make) in
+            make.centerX.equalTo(self.snp.centerX)
+            make.bottom.equalTo(self.snp.bottom).offset(-20)
+        })
     }
 
 
