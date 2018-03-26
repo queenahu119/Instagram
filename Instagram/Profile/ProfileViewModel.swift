@@ -86,19 +86,31 @@ class ProfileViewModel: NSObject {
 
     func fetchProfileData() {
 
-        dataManager.fetchUserData(userId: (PFUser.current()?.objectId)!) { [weak self] (profilData, response, error) in
+        guard let objectId = PFUser.current()?.objectId else {
+            print("Fail to get objectId.")
+            return
+        }
+
+        dataManager.fetchUserData(userId:objectId) { [weak self] (profilData, response, error) in
             if let profilData = profilData {
 
                 self?.profile = profilData
 
             }
         }
+
     }
 
     func fetchMedias() {
         self.isLoading = true
 
-        dataManager.fetchMedias(userId: (PFUser.current()?.objectId)!) { (success, posts, error) in
+        guard let objectId = PFUser.current()?.objectId else {
+            print("Fail to get objectId.")
+            self.isLoading = false
+            return
+        }
+
+        dataManager.fetchMedias(userId:objectId) { (success, posts, error) in
 
             self.isLoading = false
 
