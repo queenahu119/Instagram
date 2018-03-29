@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class FeedTableViewCell: UITableViewCell {
 
@@ -31,17 +32,25 @@ class FeedTableViewCell: UITableViewCell {
         super.awakeFromNib()
 
         profile.layer.masksToBounds = false
-        profile.layer.cornerRadius = profile.frame.height/2
+        profile.layer.cornerRadius = 25
         profile.clipsToBounds = true
 
         textComments.isEditable = false
         textComments.isSelectable = false
         textComments.isScrollEnabled = false
+
         textComments.textContainer.maximumNumberOfLines = 2
         textComments.textContainer.lineBreakMode = .byTruncatingTail
-
         textComments.translatesAutoresizingMaskIntoConstraints = true
         textComments.sizeToFit()
+        textComments.contentInset = UIEdgeInsets(top: -5, left: -5, bottom: -5, right: -5)
+
+        imageFile.contentMode = .scaleToFill
+
+        textNumOfLike.sizeToFit()
+        textPostTime.sizeToFit()
+
+        setupUI()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -57,5 +66,88 @@ class FeedTableViewCell: UITableViewCell {
     @IBAction func commentTapped(_ sender: Any) {
         delegate?.HomeFeedCellDelegateDidTapComment(self)
     }
-    
+
+    override func updateConstraints()
+    {
+        setupUI()
+
+        super.updateConstraints()
+    }
+
+    func setupUI() {
+
+        let padding = UIEdgeInsets(top: 8, left: 8, bottom: -8, right: -8)
+
+
+        profile.snp.makeConstraints { (make) in
+            make.top.equalTo(self.contentView.snp.top).offset(padding.top)
+            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.size.equalTo(50)
+        }
+        username.snp.makeConstraints { (make) in
+            make.centerY.equalTo(profile.snp.centerY)
+            make.left.equalTo(profile.snp.right).offset(padding.left)
+            make.right.equalTo(moreButton.snp.left).offset(padding.right).priority(.medium)
+        }
+        moreButton.snp.makeConstraints { (make) in
+            make.left.equalTo(username.snp.right).offset(padding.left).priority(.medium)
+            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.centerY.equalTo(profile.snp.centerY)
+            make.size.equalTo(30)
+        }
+
+        imageFile.snp.makeConstraints { (make) in
+            make.left.equalTo(self.contentView.snp.left)
+            make.top.equalTo(profile.snp.bottom).offset(8)
+            make.right.equalTo(self.contentView.snp.right)
+            make.height.equalTo(200)
+        }
+
+        favoriteButton.snp.makeConstraints { (make) in
+            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.right.equalTo(commentButton.snp.left)
+            make.top.equalTo(imageFile.snp.bottom).offset(padding.top)
+            make.size.equalTo(30)
+        }
+        commentButton.snp.makeConstraints { (make) in
+            make.left.equalTo(favoriteButton.snp.right)
+            make.right.equalTo(shareButton.snp.left)
+            make.top.equalTo(favoriteButton.snp.top)
+            make.size.equalTo(30)
+        }
+        shareButton.snp.makeConstraints { (make) in
+            make.left.equalTo(commentButton.snp.right)
+            make.top.equalTo(favoriteButton.snp.top)
+            make.size.equalTo(30)
+        }
+
+        bookmarkButton.snp.makeConstraints { (make) in
+            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.top.equalTo(favoriteButton.snp.top)
+            make.size.equalTo(30)
+        }
+
+        textNumOfLike.snp.makeConstraints { (make) in
+            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.top.equalTo(favoriteButton.snp.bottom).offset(padding.top)
+        }
+        textComments.snp.makeConstraints { (make) in
+            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.top.equalTo(textNumOfLike.snp.bottom)
+        }
+        viewCommentsButton.snp.makeConstraints { (make) in
+            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.top.equalTo(textComments.snp.bottom)
+        }
+        textPostTime.snp.makeConstraints { (make) in
+            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.top.equalTo(viewCommentsButton.snp.bottom)
+            make.bottom.equalTo(self.contentView.snp.bottom).offset(padding.bottom)
+        }
+
+    }
 }

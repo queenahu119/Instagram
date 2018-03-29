@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 
+
 protocol HomeFeedCellDelegate : class {
     func HomeFeedCellDelegateDidTapLike(_ sender: FeedTableViewCell)
     func HomeFeedCellDelegateDidTapComment(_ sender: FeedTableViewCell)
@@ -28,6 +29,9 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         super.viewDidLoad()
 
         setUpNavBar()
+
+        self.tableView.rowHeight = UITableViewAutomaticDimension;
+        self.tableView.estimatedRowHeight = 500;
 
         activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
             UIActivityIndicatorViewStyle.gray)
@@ -96,10 +100,6 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         return viewModel.numberOfTableCells
     }
 
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 440
-    }
-
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: feedCell, for: indexPath) as! FeedTableViewCell
 
@@ -130,7 +130,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
 
         cell.tag = indexPath.row
         cell.delegate = self
-        
+
         return cell
     }
 
