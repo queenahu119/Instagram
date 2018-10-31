@@ -24,8 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             $0.server = PARSE_CLIENT.SERVER
         }
         Parse.initialize(with: configuration)
-        PFUser.logOut()
-        
+//        PFUser.logOut()
+
         return true
     }
 

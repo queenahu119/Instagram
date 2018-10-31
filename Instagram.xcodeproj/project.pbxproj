@@ -305,7 +305,6 @@
 				9B1EA83B1FFB48B2008ADACD /* Frameworks */,
 				9B1EA83C1FFB48B2008ADACD /* Resources */,
 				2422CC07A26E7A8FC088E607 /* [CP] Embed Pods Frameworks */,
-				6F4B3A8AA4BDE8EAD97017BD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -324,8 +323,6 @@
 				9B1EA84E1FFB48B2008ADACD /* Sources */,
 				9B1EA84F1FFB48B2008ADACD /* Frameworks */,
 				9B1EA8501FFB48B2008ADACD /* Resources */,
-				78460B4FA37610666E8870E6 /* [CP] Embed Pods Frameworks */,
-				2B04F15F3C1A57F25C660A98 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -345,8 +342,6 @@
 				9B1EA8591FFB48B2008ADACD /* Sources */,
 				9B1EA85A1FFB48B2008ADACD /* Frameworks */,
 				9B1EA85B1FFB48B2008ADACD /* Resources */,
-				AE12F48CBF34325CDBF44DC0 /* [CP] Embed Pods Frameworks */,
-				B2A3F95B55ADE95E6353E724 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -473,21 +468,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Instagram/Pods-Instagram-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2B04F15F3C1A57F25C660A98 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-InstagramTests/Pods-InstagramTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		5248ACE527EB5375FCACE041 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -504,66 +484,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6F4B3A8AA4BDE8EAD97017BD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Instagram/Pods-Instagram-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		78460B4FA37610666E8870E6 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-InstagramTests/Pods-InstagramTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		AE12F48CBF34325CDBF44DC0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-InstagramUITests/Pods-InstagramUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B2A3F95B55ADE95E6353E724 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-InstagramUITests/Pods-InstagramUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B2AE23B4D59E6BA29449A35E /* [CP] Check Pods Manifest.lock */ = {

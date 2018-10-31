@@ -31,7 +31,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         setUpNavBar()
 
         self.tableView.rowHeight = UITableViewAutomaticDimension;
-        self.tableView.estimatedRowHeight = 500;
+        self.tableView.estimatedRowHeight = 200;
 
         activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
             UIActivityIndicatorViewStyle.gray)
@@ -105,10 +105,12 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
 
         let cellViewModel: FeedCellViewModel = viewModel.getCellViewModel(at: indexPath)
 
+        let comment = cellViewModel.comments?.replacingOccurrences(of: "\n", with: "")
 
         cell.username.text = cellViewModel.username
-        cell.textComments.text = cellViewModel.comments
+        cell.textComments.text = comment
 
+//        print("text: [\(cell.textComments.text)]")
         viewModel.getProfileImageOfCell(at: indexPath as IndexPath) { (image, response, error) in
             DispatchQueue.main.async {
                 cell.profile.image = image
@@ -130,6 +132,11 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
 
         cell.tag = indexPath.row
         cell.delegate = self
+
+//        print("start:")
+        cell.setNeedsUpdateConstraints()
+        cell.setNeedsLayout()
+//        print("end.")
 
         return cell
     }

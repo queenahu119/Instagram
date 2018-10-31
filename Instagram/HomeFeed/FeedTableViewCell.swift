@@ -27,7 +27,9 @@ class FeedTableViewCell: UITableViewCell {
     @IBOutlet weak var textPostTime: UILabel!
 
     weak var delegate: HomeFeedCellDelegate?
-    
+
+//    var heightConstraint: Constraint? = nil
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -38,11 +40,9 @@ class FeedTableViewCell: UITableViewCell {
         textComments.isEditable = false
         textComments.isSelectable = false
         textComments.isScrollEnabled = false
-
-        textComments.textContainer.maximumNumberOfLines = 2
+        textComments.textContainer.maximumNumberOfLines = 0
         textComments.textContainer.lineBreakMode = .byTruncatingTail
         textComments.translatesAutoresizingMaskIntoConstraints = true
-        textComments.sizeToFit()
         textComments.contentInset = UIEdgeInsets(top: -5, left: -5, bottom: -5, right: -5)
 
         imageFile.contentMode = .scaleToFill
@@ -131,16 +131,38 @@ class FeedTableViewCell: UITableViewCell {
             make.left.equalTo(self.contentView.snp.left).offset(padding.left)
             make.right.equalTo(self.contentView.snp.right).offset(padding.right)
             make.top.equalTo(favoriteButton.snp.bottom).offset(padding.top)
+            make.bottom.equalTo(textComments.snp.top)
         }
+
+//        let fixedWidth = textComments.frame.size.width
+//        textComments.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+//        let newSize = textComments.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+//        var newFrame = textComments.frame
+//        newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
+//        textComments.frame = newFrame
+
+
+        textComments.backgroundColor = UIColor.brown
+
+
+        let width = textComments.frame.width
+
+        let sizeThatFits = textComments.sizeThatFits(CGSize(width: width+10, height: CGFloat(MAXFLOAT)))
+
+
+        print("sizeThatFits: ", sizeThatFits.height)
         textComments.snp.makeConstraints { (make) in
             make.left.equalTo(self.contentView.snp.left).offset(padding.left)
             make.right.equalTo(self.contentView.snp.right).offset(padding.right)
             make.top.equalTo(textNumOfLike.snp.bottom)
+            make.bottom.equalTo(viewCommentsButton.snp.top)
+            make.height.equalTo(sizeThatFits.height)
         }
         viewCommentsButton.snp.makeConstraints { (make) in
             make.left.equalTo(self.contentView.snp.left).offset(padding.left)
             make.right.equalTo(self.contentView.snp.right).offset(padding.right)
             make.top.equalTo(textComments.snp.bottom)
+            make.bottom.equalTo(textPostTime.snp.top)
         }
         textPostTime.snp.makeConstraints { (make) in
             make.left.equalTo(self.contentView.snp.left).offset(padding.left)

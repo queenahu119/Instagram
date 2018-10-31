@@ -8,6 +8,12 @@ DEPENDENCIES:
   - Parse
   - SnapKit (~> 4.0.0)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Bolts
+    - Parse
+    - SnapKit
+
 SPEC CHECKSUMS:
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   Parse: cdc0f1f975ee8be0409e66f21b05df4ae067047c
@@ -15,4 +21,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 92befb89b0fb628a31ac72dc0fde60bb85a44044
 
-COCOAPODS: 1.4.0.beta.2
+COCOAPODS: 1.5.3
