@@ -11,9 +11,9 @@ import Parse
 
 class CommentsViewModel: NSObject {
 
-    let dataManager : DataManagerProtocol
+    let dataManager : DataManager
 
-    init(dataManager: DataManagerProtocol = DataManager()) {
+    init(dataManager: DataManager = DataManager()) {
         self.dataManager = dataManager
     }
 

@@ -7,20 +7,20 @@
 //
 
 import UIKit
-import Parse
+//import Parse
 
 class LoginViewModel: NSObject {
+
+    let dataManager : DataManager
+
+    init(dataManager: DataManager = DataManager()) {
+        self.dataManager = dataManager
+    }
 
     var isLoading: Bool = false {
         didSet {
             self.updateLoadingStatus?()
         }
-    }
-
-    var currentUser = PFUser.current()
-
-    override init() {
-
     }
 
     func initFetch() {
@@ -33,22 +33,10 @@ class LoginViewModel: NSObject {
     var updateLoadingStatus: (()->())?
 
     func isLogin() -> Bool {
-        if (currentUser != nil) {
-
-            let user = currentUser
-            CurrentAccount.shared().baseUserId = (user?.objectId)!
-            CurrentAccount.shared().baseUsername = (user?.username)!
-            CurrentAccount.shared().baseProfilePicture = user!["profile_picture"] as? PFFile
-
-            return true
-        } else {
-            return false
-        }
+        return dataManager.isUserLogin()
     }
 
     func signUp(data: [String: String], performSegue: @escaping ()->(), showAlert: @escaping (_ title: String, _ message: String)->()) {
-
-        let user = PFUser()
 
         guard let username = data["username"] else {
             return
@@ -56,24 +44,16 @@ class LoginViewModel: NSObject {
         guard let password = data["password"] else {
             return
         }
-        user.username = username
-        user.password = password
 
-
-        user.signUpInBackground(block: { (success, error) in
-
+        dataManager.signUp(username, password: password) { (success, error) in
             self.isLoading = false
 
             if let error = error {
-
                 showAlert("Could not sign you up", error.localizedDescription)
-
             } else {
-                print("Sign up!")
-
                 performSegue()
             }
-        })
+        }
     }
 
     func logIn(data: [String: String], performSegue: @escaping ()->(), showAlert: @escaping (_ title: String, _ message: String)->()) {
@@ -85,26 +65,15 @@ class LoginViewModel: NSObject {
             return
         }
 
-        PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
+        dataManager.logInWithUsername(username, password: password) { (success, error) in
             self.isLoading = false
 
-            if let user = user {
-                print("Log In Successful")
-
-                CurrentAccount.shared().baseUserId = (user.objectId)!
-                CurrentAccount.shared().baseUsername = (user.username)!
-                CurrentAccount.shared().baseProfilePicture = user["profile_picture"] as? PFFile
-                
+            if success {
                 performSegue()
-
             } else {
-                var errorText = "Unknown Error: Please try again!"
-
                 if let error = error {
-                    errorText = error.localizedDescription
+                    showAlert(error.errorDescription ?? "None", "")
                 }
-                showAlert("Could not sign you up", errorText)
-
             }
         }
     }

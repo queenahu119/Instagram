@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		544AD338054F3EEB38340D0F /* Pods_Instagram.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D290081E4ACE13733692A4F7 /* Pods_Instagram.framework */; };
 		76F17554821365A56989A6D2 /* Pods_InstagramUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3685B9E626E8ACADEF784F49 /* Pods_InstagramUITests.framework */; };
+		88ADA622219121230073DE4F /* QNAError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ADA621219121230073DE4F /* QNAError.swift */; };
 		9B07B47B20156F7B006D8D04 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B07B47A20156F7B006D8D04 /* ProfileViewController.swift */; };
 		9B0D9A361FFC606A00365E76 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0D9A2E1FFC606700365E76 /* Constants.swift */; };
 		9B0D9A391FFC606A00365E76 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0D9A311FFC606800365E76 /* ProfileViewModel.swift */; };
@@ -69,6 +70,7 @@
 		3685B9E626E8ACADEF784F49 /* Pods_InstagramUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_InstagramUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BDABB48B795FA6E84D11A91 /* Pods_InstagramTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_InstagramTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D8DA42CD99F6F4CD46D018 /* Pods-InstagramUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstagramUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-InstagramUITests/Pods-InstagramUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		88ADA621219121230073DE4F /* QNAError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QNAError.swift; sourceTree = "<group>"; };
 		97854031EA6B22090ED51BF0 /* Pods-InstagramTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstagramTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-InstagramTests/Pods-InstagramTests.release.xcconfig"; sourceTree = "<group>"; };
 		9B07B47A20156F7B006D8D04 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		9B0D9A2E1FFC606700365E76 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -142,6 +144,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		88ADA6232191388A0073DE4F /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				9B0D9A2E1FFC606700365E76 /* Constants.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
 		9B1EA8351FFB48B2008ADACD = {
 			isa = PBXGroup;
 			children = (
@@ -167,15 +177,15 @@
 		9B1EA8401FFB48B2008ADACD /* Instagram */ = {
 			isa = PBXGroup;
 			children = (
+				9B1EA8411FFB48B2008ADACD /* AppDelegate.swift */,
 				9B871050202277B900883813 /* Kernel */,
 				9B87104F202276FB00883813 /* DiscoverPeople */,
 				9B87104E202276ED00883813 /* Login */,
 				9B87104D202276C300883813 /* Post */,
 				9B87104C2022769900883813 /* Profile */,
 				9B87104B2022765600883813 /* HomeFeed */,
-				9B1EA8411FFB48B2008ADACD /* AppDelegate.swift */,
-				9B0D9A2E1FFC606700365E76 /* Constants.swift */,
 				9B0D9A351FFC606A00365E76 /* museum.jpg */,
+				88ADA6232191388A0073DE4F /* Constants */,
 				9BAC76592009F52C00996F97 /* Common.swift */,
 				9B0D9A441FFC647700365E76 /* SearchViewController.swift */,
 				9B0D9A401FFC632800365E76 /* Main.storyboard */,
@@ -265,6 +275,7 @@
 				9B51F6E01FFCA7440051ED36 /* DataManager.swift */,
 				9B0D9A331FFC606900365E76 /* User.swift */,
 				9B6A56632023CFC50026D6A9 /* CurrentAccount.swift */,
+				88ADA621219121230073DE4F /* QNAError.swift */,
 			);
 			path = Kernel;
 			sourceTree = "<group>";
@@ -520,6 +531,7 @@
 				9BEB43332003334900D1A014 /* PostViewModel.swift in Sources */,
 				9B7ED7212004BA5C005D9A77 /* UserHeaderTableViewCell.swift in Sources */,
 				9B7D95D42016F11F00A3E4AF /* DiscoverPeopleTableViewController.swift in Sources */,
+				88ADA622219121230073DE4F /* QNAError.swift in Sources */,
 				9B6A56622023CA6E0026D6A9 /* CommentsViewModel.swift in Sources */,
 				9B0D9A361FFC606A00365E76 /* Constants.swift in Sources */,
 				9B3EFE812001C68600C812E9 /* HomeFeedTableViewController.swift in Sources */,

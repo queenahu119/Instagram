@@ -17,10 +17,9 @@ class PostViewModel: NSObject {
     var updateLoadingStatus: (()->())?
     var postAfterCompletion: ((Bool, String?, String?)->())?
 
+    let dataManager : DataManager
 
-    let dataManager : DataManagerProtocol
-
-    init(dataManager: DataManagerProtocol = DataManager()) {
+    init(dataManager: DataManager = DataManager()) {
         self.dataManager = dataManager
     }
 

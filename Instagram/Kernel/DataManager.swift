@@ -27,10 +27,55 @@ protocol DataManagerProtocol {
     func addComment(data: [String: String], completion: @escaping (Bool)-> Void)
 }
 
-class DataManager : DataManagerProtocol {
+class DataManager : NSObject {
 
     var imageCache = NSCache<NSString, UIImage>()
 
+    func setCurrentUser(_ user: PFUser) {
+        CurrentAccount.shared().baseUserId = (user.objectId)!
+        CurrentAccount.shared().baseUsername = (user.username)!
+        CurrentAccount.shared().baseProfilePicture = user["profile_picture"] as? PFFile
+    }
+
+    func isUserLogin() -> Bool {
+        if let currentUser = PFUser.current() {
+            self.setCurrentUser(currentUser)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func signUp(_ username: String, password: String, completion: @escaping (Bool, Error?)-> ()) {
+        let user = PFUser()
+        user.username = username
+        user.password = password
+
+        user.signUpInBackground { (success, error) in
+            completion(success, error)
+        }
+    }
+
+    func logInWithUsername(_ username: String, password: String, completion: @escaping (Bool, QNAError?)-> ()) {
+
+        PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
+
+            if let user = user {
+                self.setCurrentUser(user)
+                completion(true, nil)
+            } else {
+                var errorObj = QNAError.logingError(comment: nil) as QNAError
+
+                if let error = error {
+                    let message = error.localizedDescription
+                    errorObj = QNAError.logingError(comment: message)
+                }
+
+                completion(false, errorObj)
+            }
+        }
+    }
+    
     func fetchImage(imageFile: PFFile, completion:@escaping (UIImage?, URLResponse?, Error?)->()) {
 
         let imageKey = imageFile.url! as NSString
