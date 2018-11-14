@@ -7,7 +7,6 @@
 //
 
 import UIKit
-//import Parse
 
 class LoginViewModel: NSObject {
 
@@ -33,7 +32,8 @@ class LoginViewModel: NSObject {
     var updateLoadingStatus: (()->())?
 
     func isLogin() -> Bool {
-        return dataManager.isUserLogin()
+        let ret = dataManager.isUserLogin()
+        return ret
     }
 
     func signUp(data: [String: String], performSegue: @escaping ()->(), showAlert: @escaping (_ title: String, _ message: String)->()) {
@@ -72,7 +72,7 @@ class LoginViewModel: NSObject {
                 performSegue()
             } else {
                 if let error = error {
-                    showAlert(error.errorDescription ?? "None", "")
+                    showAlert(error.localizedDescription , "Hello")
                 }
             }
         }

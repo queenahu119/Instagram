@@ -90,7 +90,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidAppear(_ animated: Bool) {
         
         if viewModel.isLogin() {
-            print("Log In Now")
             self.performSegue(withIdentifier: "showMainView", sender: self)
         }
     }
@@ -166,6 +165,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: - Helper Methods
 
     fileprivate func validate(_ textField: UITextField) -> (Bool, String?) {
+
+        // For test
+        if InstagramStub.detect() {
+            return (true, nil)
+        }
+
         guard let text = textField.text else {
             return (false, nil)
         }

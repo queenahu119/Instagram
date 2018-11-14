@@ -62,7 +62,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
 
         viewModel.initFetch()
 
-        viewModel.fetchMedias()
+//        viewModel.fetchMedias()
     }
 
     func setUpNavBar() {

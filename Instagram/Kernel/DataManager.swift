@@ -29,49 +29,32 @@ protocol DataManagerProtocol {
 
 class DataManager : NSObject {
 
+    lazy var dataAdapter = DataAdapterFactory.sharedInstance.dataAdapter
     var imageCache = NSCache<NSString, UIImage>()
 
-    func setCurrentUser(_ user: PFUser) {
-        CurrentAccount.shared().baseUserId = (user.objectId)!
-        CurrentAccount.shared().baseUsername = (user.username)!
-        CurrentAccount.shared().baseProfilePicture = user["profile_picture"] as? PFFile
-    }
-
     func isUserLogin() -> Bool {
-        if let currentUser = PFUser.current() {
-            self.setCurrentUser(currentUser)
-            return true
-        } else {
-            return false
-        }
+        return dataAdapter.isUserLogin()
     }
 
     func signUp(_ username: String, password: String, completion: @escaping (Bool, Error?)-> ()) {
-        let user = PFUser()
-        user.username = username
-        user.password = password
 
-        user.signUpInBackground { (success, error) in
-            completion(success, error)
+        dataAdapter.signUp(username, password: password) { (user, error) in
+
+            if user != nil {
+                completion(true, nil)
+            } else {
+                completion(false, error)
+            }
         }
     }
 
-    func logInWithUsername(_ username: String, password: String, completion: @escaping (Bool, QNAError?)-> ()) {
+    func logInWithUsername(_ username: String, password: String, completion: @escaping (Bool, Error?)-> ()) {
 
-        PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
-
-            if let user = user {
-                self.setCurrentUser(user)
+        dataAdapter.logIn(username, password: password) { (user, error) in
+            if user != nil {
                 completion(true, nil)
             } else {
-                var errorObj = QNAError.logingError(comment: nil) as QNAError
-
-                if let error = error {
-                    let message = error.localizedDescription
-                    errorObj = QNAError.logingError(comment: message)
-                }
-
-                completion(false, errorObj)
+                completion(false, error)
             }
         }
     }

@@ -12,7 +12,6 @@ import Parse
 class CurrentAccount {
 
     // MARK: - Properties
-
     private static var sharedCurrentAccount: CurrentAccount = {
         let currentAccount = CurrentAccount()
 
@@ -27,7 +26,7 @@ class CurrentAccount {
 
     // Initialization
 
-    private init() {
+    fileprivate init() {
         self.baseUserId = ""
         self.baseUsername = ""
         self.baseProfilePicture = nil
