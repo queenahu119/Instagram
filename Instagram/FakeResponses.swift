@@ -28,9 +28,9 @@ class FakeResponses {
         responses.append(response)
     }
 
-    func responseMatching(_ url: String) -> FakeResponse? {
+    func responseMatching(_ api: String) -> FakeResponse? {
         return responses.filter { response in
-            return url.range(of: response.pattern, options: .regularExpression) != nil
+            return api.range(of: response.pattern, options: .regularExpression) != nil
             }.first
     }
 }

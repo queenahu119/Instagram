@@ -7,7 +7,6 @@
 //
 
 import XCTest
-import Parse
 @testable import Instagram
 
 class ParseApiTest: XCTestCase {
@@ -24,10 +23,6 @@ class ParseApiTest: XCTestCase {
     func testLoginResponse() {
         let expectation = self.expectation(description: "Login Response Parse Expectation")
 
-//        parseDataAdapter.shouldReturnError = true
-
-        dataAdapter.url = URL(fileURLWithPath: "GetLoginMember")
-        
         dataAdapter.logIn("aaaa", password: "password") { (user, error) in
             XCTAssertNil(error)
             guard let user = user else {
@@ -41,12 +36,23 @@ class ParseApiTest: XCTestCase {
         self.waitForExpectations(timeout: 10.0, handler: nil)
     }
 
+    func testLoginResponseError() {
+        let expectation = self.expectation(description: "Login Response Parse Expectation")
+
+        dataAdapter.shouldReturnError = true
+
+        dataAdapter.logIn("aaaa", password: "password") { (user, error) in
+
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        }
+        self.waitForExpectations(timeout: 10.0, handler: nil)
+    }
+
     func testSignUpResponse() {
         let expectation = self.expectation(description: "SignUp Response Parse Expectation")
 
 //        parseDataAdapter.shouldReturnError = true
-
-        dataAdapter.url = URL(fileURLWithPath: "GetLoginMember")
 
         dataAdapter.signUp("aaaa", password: "password") { (user, error) in
             XCTAssertNil(error)

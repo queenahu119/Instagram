@@ -12,7 +12,6 @@ class MockDataAdapter {
     var shouldReturnError = false
     var loginWasCalled = false
     var signupWasCalled = false
-    var url: URL? = nil
 
     enum MockServiceError: Error {
         case login
@@ -37,7 +36,8 @@ class MockDataAdapter {
 extension MockDataAdapter: DataAdapterProtocol {
 
     func isUserLogin() -> Bool {
-        if let fakeResponse = FakeResponses.sharedInstance.responseMatching(url?.absoluteString ?? "") {
+        let api = "GetLogin"
+        if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
             return fakeResponse.isLogin
         }
         return false
@@ -50,7 +50,8 @@ extension MockDataAdapter: DataAdapterProtocol {
             completion(nil, MockServiceError.signup)
         } else {
 
-            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(url?.absoluteString ?? "") {
+            let api = "GetSignUpMember"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
                 if let json = fakeResponse.json,
                     let data = json[FakeResponsesJson.signup.rawValue] as? [String: String] {
 
@@ -76,7 +77,8 @@ extension MockDataAdapter: DataAdapterProtocol {
             completion(nil, MockServiceError.login)
         } else {
 
-            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(url?.absoluteString ?? "") {
+            let api = "GetLoginMember"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
                 if let json = fakeResponse.json,
                     let data = json[FakeResponsesJson.login.rawValue] as? [String: String] {
 

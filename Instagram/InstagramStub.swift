@@ -37,9 +37,7 @@ struct InstagramStub {
     }
 
     static func configure() {
-        let mockDataAdapter = MockDataAdapter()
-        mockDataAdapter.url = URL(fileURLWithPath: "GetLoginMember")
-        DataAdapterFactory.sharedInstance.testDataAdapter = mockDataAdapter
+        DataAdapterFactory.sharedInstance.testDataAdapter = MockDataAdapter()
 
         let responses = FakeResponses.sharedInstance
 
@@ -53,6 +51,18 @@ struct InstagramStub {
                     [ "user": "cccc",
                       "id": "2222",
                       "email": "cccc@gamil.com"]
+                ], isLogin: false))
+
+        responses.addResponse(
+            FakeResponse(pattern: ".*GetSignUpMember.*", json: [
+                FakeResponsesJson.login.rawValue:
+                    [ "user": "dddd",
+                      "id": "3333",
+                      "email": "dddd@gamil.com"],
+                FakeResponsesJson.signup.rawValue:
+                    [ "user": "eeee",
+                      "id": "4444",
+                      "email": "eeee@gamil.com"]
                 ], isLogin: false))
 
     }
