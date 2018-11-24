@@ -65,7 +65,7 @@ class LoginViewModel: NSObject {
             return
         }
 
-        dataManager.logInWithUsername(username, password: password) { (success, error) in
+        dataManager.logIn(username, password: password) { (success, error) in
             self.isLoading = false
 
             if success {

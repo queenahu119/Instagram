@@ -20,9 +20,9 @@ class CurrentAccount {
 
     // MARK: -
 
-    var baseUserId: String
-    var baseUsername: String
-    var baseProfilePicture: PFFile?
+    var baseUserId: String?
+    var baseUsername: String?
+    var baseProfilePicture: URL?
 
     // Initialization
 

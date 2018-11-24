@@ -21,7 +21,7 @@ class EditProfileModel: NSObject {
         self.profilePicture = nil
     }
 
-    private var profilePicture: PFFile? {
+    private var profilePicture: URL? {
         didSet {
             self.reloadTableViewClosure?()
         }
@@ -68,8 +68,8 @@ class EditProfileModel: NSObject {
 
         if let imageFile = self.profilePicture {
 
-            dataManager.fetchImage(imageFile: imageFile) { (image, response, error) in
-                completion(image, response, error)
+            dataManager.fetchImage(imageUrl: imageFile) { (image, error) in
+                completion(image, nil, error)
             }
         }
 
@@ -92,7 +92,7 @@ class EditProfileModel: NSObject {
 
     func fetchProfileData() {
 
-        dataManager.fetchUserData(userId: (PFUser.current()?.objectId)!) { [weak self] (profilData, response, error) in
+        dataManager.fetchUserData(userId: (PFUser.current()?.objectId)!) { [weak self] (profilData, error) in
             if let profilData = profilData {
                 self?.accountData = [
                     ["fieldName": "Name", "data": profilData.fullname],

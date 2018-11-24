@@ -64,10 +64,9 @@ class DiscoverPeopleViewModel: NSObject {
 
     func getImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
 
-        if let imageFile = cellViewModel[indexPath.row].imageFile {
-
-            dataManager.fetchImage(imageFile: imageFile) { (image, response, error) in
-                completion(image, response, error)
+        if let imageUrl = cellViewModel[indexPath.row].imageUrl {
+            dataManager.fetchImage(imageUrl: imageUrl) { (image, error) in
+                completion(image, nil, error)
             }
         }
     }
@@ -95,12 +94,13 @@ class DiscoverPeopleViewModel: NSObject {
 
             group.enter()
 
-            self.dataManager.fetchFollowing(userId: (PFUser.current()?.objectId)!, completion: { (users) in
-                self.followings = users
+            if let userId = CurrentAccount.shared().baseUserId {
+                self.dataManager.fetchFollowing(userId: userId, completion: { (users, error) in
+                    self.followings = users
 
-                group.leave()
-            })
-
+                    group.leave()
+                })
+            }
             group.wait()
 
             DispatchQueue.main.async { [unowned self] in
@@ -114,7 +114,7 @@ class DiscoverPeopleViewModel: NSObject {
                         isFollow = true
                     }
 
-                    list.append(PeopleCellViewModel(userId: user.id, usernameText: user.username, fullnameText: user.fullname, imageFile: user.profilePicture, isFollowing: isFollow))
+                    list.append(PeopleCellViewModel(userId: user.id, usernameText: user.username, fullnameText: user.fullname, imageUrl: user.profilePicture, isFollowing: isFollow))
 
                 }
                 self.cellViewModel = list
@@ -164,7 +164,7 @@ struct PeopleCellViewModel {
     let userId: String
     let usernameText: String
     let fullnameText: String
-    let imageFile: PFFile?
+    let imageUrl: URL?
     var isFollowing: Bool
 }
 

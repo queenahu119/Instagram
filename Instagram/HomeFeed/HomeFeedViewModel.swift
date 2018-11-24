@@ -55,102 +55,64 @@ class HomeFeedViewModel: NSObject {
         return cellViewModel[indexPath.row]
     }
 
-    func getProfileImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
+    func getProfileImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, Error?) -> Void) {
 
-        if let imageFile = cellViewModel[indexPath.row].profileImageUrl {
-
-            dataManager.fetchImage(imageFile: imageFile) { (image, response, error) in
-                completion(image, response, error)
+        if let imageUrl = cellViewModel[indexPath.row].profileImageUrl {
+            dataManager.fetchImage(imageUrl: imageUrl) { (image, error) in
+                completion(image, error)
             }
         } else {
             let defaultImage = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
 
-            completion(defaultImage, nil, nil)
+            completion(defaultImage, nil)
         }
     }
 
-    func getImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
+    func getImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, Error?) -> Void) {
 
-        if let imageFile = cellViewModel[indexPath.row].imageUrls.first as? PFFile {
-
-            dataManager.fetchImage(imageFile: imageFile) { (image, response, error) in
-                completion(image, response, error)
+        // to do: multi-photos
+        if let imageUrl = cellViewModel[indexPath.row].imageUrls.first as? URL {
+            dataManager.fetchImage(imageUrl: imageUrl) { (image, error) in
+                completion(image, error)
             }
         } else {
             let defaultImage = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
 
-            completion(defaultImage, nil, nil)
+            completion(defaultImage, nil)
         }
     }
 
-    func fetchMedias() {
-
+    func fetchAllMedias() {
         self.isLoading = true
+        guard let userID = CurrentAccount.shared().baseUserId else {
+            print("No one login.")
+            return
+        }
 
-        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-            let group = DispatchGroup()
-
-
-            if let userID = PFUser.current()?.objectId {
-
-                group.enter()
-
-                self.dataManager.fetchFollowing(userId: userID, completion: { (users) in
-                    self.followings = users
-
-                    self.followings.append(userID)
-                    group.leave()
-                })
-
-                group.wait()
+        dataManager.fetchMedias(userId: userID) { (posts) in
+            guard let posts = posts else {
+                print("No any post.")
+                return
             }
 
             var listByUser:[FeedCellViewModel] = [FeedCellViewModel]()
 
-            for user in self.followings {
-
-                group.enter()
-                print("fetchPosts user: ", user)
-                self.dataManager.fetchPosts(userId: user, completion: { (success, objects, error) in
-                    if success {
-
-                        for post in objects {
-                            if let post = post {
-
-                                var commentString = ""
-
-                                for comment in post.comments {
-                                    if let text = comment?.text {
-                                        commentString = commentString + "\(text) \n"
-                                    }
-                                }
-                                
-                                listByUser.append(FeedCellViewModel(id: post.id ?? "", userId: post.userId ?? "", username: post.username!, profileImageUrl: post.profileImageUrl, location: post.location, numOfLike: post.numOfLike, comments: commentString, imageUrls: post.imageUrls, dateText: post.createdTime))
-                            }
-                        }
-
+            for post in posts {
+                var commentString = ""
+                for comment in post.comments {
+                    if let text = comment?.text {
+                        commentString = commentString + "\(text) \n"
                     }
-                    group.leave()
-                })
+                }
+
+                listByUser.append(FeedCellViewModel(id: post.id ?? "", userId: post.userId ?? "", username: post.username!, profileImageUrl: post.profileImageUrl, location: post.location, numOfLike: post.numOfLike, comments: commentString, imageUrls: post.imageUrls, dateText: post.createdTime))
             }
 
-            group.wait()
+            listByUser.sort(by: {Double(($0.dateText?.timeIntervalSinceNow)!) > Double(($1.dateText?.timeIntervalSinceNow)!)})
 
-            DispatchQueue.main.async { [unowned self] in
-
-//                for post in listByUser {
-//
-//                    listByUser.append(post)
-//                }
-
-                listByUser.sort(by: {Double(($0.dateText?.timeIntervalSinceNow)!) > Double(($1.dateText?.timeIntervalSinceNow)!)})
-
-                self.cellViewModel = listByUser
-
-                self.isLoading = false
-            }
+            self.cellViewModel = listByUser
+            self.isLoading = false
         }
-
     }
 
 
@@ -160,11 +122,11 @@ struct FeedCellViewModel {
     let id: String
     let userId: String
     let username: String
-    let profileImageUrl: PFFile?
+    let profileImageUrl: URL?
     let location: String?
     let numOfLike: String?
     let comments: String?
 
-    let imageUrls: [PFFile?]
+    let imageUrls: [URL?]
     let dateText: Date?
 }

@@ -11,6 +11,10 @@ import Foundation
 public enum QNAError: Error {
     case logingError(comment: String?)
     case signupError(comment: String?)
+    case getAccountInfoError
+    case getPosts
+    case getComments
+    case getFollowings
 }
 
 extension QNAError: LocalizedError {
@@ -20,22 +24,15 @@ extension QNAError: LocalizedError {
             return NSLocalizedString("Could not log in. \(String(describing: comment ?? ""))", comment: comment ?? "")
         case .signupError(comment: let comment):
             return NSLocalizedString("Could not sign you up. \(comment ?? "")", comment: comment ?? "")
+        case .getAccountInfoError:
+            return NSLocalizedString("Could not get account information. ", comment: "")
+        case .getPosts:
+            return NSLocalizedString("Could not get posts. ", comment: "")
+        case .getComments:
+            return NSLocalizedString("Could not get comments. ", comment: "")
+        case .getFollowings:
+            return NSLocalizedString("Could not get followings. ", comment: "")
         }
-    }
-    public var failureReason: String? {
-        switch self {
-        case .logingError(comment: let comment):
-            return NSLocalizedString("I don't know why.", comment: comment ?? "")
-        case .signupError(comment: let comment):
-            return NSLocalizedString("I don't know why.", comment: comment ?? "")
-        }
-    }
-    public var recoverySuggestion: String? {
-        switch self {
-        case .logingError(comment: let comment):
-            return NSLocalizedString("Please try again!", comment: comment ?? "")
-        case .signupError(comment: let comment):
-            return NSLocalizedString("Please try again!", comment: comment ?? "")
-        }
+
     }
 }

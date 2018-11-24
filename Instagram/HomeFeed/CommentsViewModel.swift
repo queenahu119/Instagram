@@ -10,18 +10,15 @@ import Foundation
 import Parse
 
 class CommentsViewModel: NSObject {
-
     let dataManager : DataManager
-
     init(dataManager: DataManager = DataManager()) {
         self.dataManager = dataManager
     }
 
     private var postId: String = ""
+    private var profileImage: URL? = nil
 
-    private var profileImage: PFFile? = nil
-
-    private var cellViewModel : [CommentCellViewModel] = [CommentCellViewModel](){
+    private var cellViewModel : [CommentCellViewModel] = [CommentCellViewModel]() {
         didSet {
             self.reloadTableViewClosure?()
         }
@@ -41,22 +38,19 @@ class CommentsViewModel: NSObject {
         return cellViewModel[indexPath.row]
     }
 
-    func getImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
+    func getImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, Error?) -> Void) {
 
-        if let imageFile = cellViewModel[indexPath.row].imageFile {
-
-            dataManager.fetchImage(imageFile: imageFile) { (image, response, error) in
-                completion(image, response, error)
+        if let imageUrl = cellViewModel[indexPath.row].imageUrl {
+            dataManager.fetchImage(imageUrl: imageUrl) { (image, error) in
+                completion(image, error)
             }
         }
     }
 
     func getProfileImage() {
 
-        if let imageFile = self.profileImage  {
-
-            dataManager.fetchImage(imageFile: imageFile) { [weak self] (image, response, error) in
-
+        if let imageUrl = self.profileImage {
+            dataManager.fetchImage(imageUrl: imageUrl) { [weak self] (image, error) in
                 self?.updateProfileImageAfterCompletion!(image, nil, nil)
             }
         } else {
@@ -84,8 +78,8 @@ class CommentsViewModel: NSObject {
 
         var list = [CommentCellViewModel]()
 
-        dataManager.fetchComments(postId: postId) { (success, objects, error) in
-            if success {
+        dataManager.fetchComments(postId: postId) { (objects, error) in
+            if error == nil {
 
                 for comment in objects {
 
@@ -93,14 +87,12 @@ class CommentsViewModel: NSObject {
 
                         let text = String(describing: comment.username ?? "")
                             + ": " + String(describing: comment.text ?? "")
-                        let data = CommentCellViewModel(postId: comment.postId ?? "", userId: comment.userId ?? "", replyUser: comment.replyUser, text: text, isLike: comment.isLike, imageFile: comment.profileImageUrl)
+                        let data = CommentCellViewModel(postId: comment.postId ?? "", userId: comment.userId ?? "", replyUser: comment.replyUser, text: text, isLike: comment.isLike, imageUrl: comment.profileImageUrl)
 
                         list.append(data)
                     }
-
                 }
                 self.cellViewModel = list
-
                 self.isLoading = false
             }
         }
@@ -139,5 +131,5 @@ struct CommentCellViewModel {
     var replyUser: String?
     var text: String?
     var isLike: Bool
-    let imageFile: PFFile?
+    let imageUrl: URL?
 }

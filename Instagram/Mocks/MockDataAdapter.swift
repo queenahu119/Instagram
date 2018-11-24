@@ -16,6 +16,10 @@ class MockDataAdapter {
     enum MockServiceError: Error {
         case login
         case signup
+        case accountInfo
+        case getposts
+        case getComments
+        case getFollowing
     }
 
     func reset() {
@@ -53,13 +57,13 @@ extension MockDataAdapter: DataAdapterProtocol {
             let api = "GetSignUpMember"
             if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
                 if let json = fakeResponse.json,
-                    let data = json[FakeResponsesJson.signup.rawValue] as? [String: String] {
+                    let data = json[FakeResponsesJson.object.rawValue] as? [String: Any] {
 
                     InstagramStub.fakeCurrentUser(data)
 
                     // to do
                     var accountData = ProfilData()
-                    accountData = ProfilData(id: data["id"] ?? "", username: data["user"] ?? "", fullname: "", email: data["email"] ?? "", profilePicture: nil, bio: "")
+                    accountData = ProfilData(id: data["id"] as! String , username: data["user"] as! String, fullname: "", email: data["email"] as! String, profilePicture: nil, bio: "")
                     completion(accountData, nil)
                 } else {
                     completion(nil, fakeResponse.error)
@@ -80,19 +84,103 @@ extension MockDataAdapter: DataAdapterProtocol {
             let api = "GetLoginMember"
             if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
                 if let json = fakeResponse.json,
-                    let data = json[FakeResponsesJson.login.rawValue] as? [String: String] {
+                    let data = json[FakeResponsesJson.object.rawValue] as? [String: Any] {
 
                     InstagramStub.fakeCurrentUser(data)
 
                     // to do
                     var accountData = ProfilData()
-                    accountData = ProfilData(id: data["id"] ?? "", username: data["user"] ?? "", fullname: "", email: data["email"] ?? "", profilePicture: nil, bio: "")
+                    accountData = ProfilData(id: data["id"] as! String, username: data["user"] as! String , fullname: "", email: data["email"] as! String , profilePicture: nil, bio: "")
                     completion(accountData, nil)
                 } else {
                     completion(nil, fakeResponse.error)
                 }
             } else {
                 completion(nil, QNAError.logingError(comment: "No FakeResponses data"))
+            }
+        }
+    }
+
+    // MARK: get user data
+    func fetchAccountInfo(userId: String, completion: @escaping (ProfilData?, Error?) -> ()) {
+
+        if shouldReturnError {
+            completion(nil, MockServiceError.accountInfo)
+        } else {
+
+            let api = "GetAccountInfo"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
+                if let json = fakeResponse.json,
+                    let data = json[FakeResponsesJson.object.rawValue] as? [ProfilData] {
+
+                    completion(data.first, nil)
+                } else {
+                    completion(nil, fakeResponse.error)
+                }
+            } else {
+                completion(nil, QNAError.getAccountInfoError)
+            }
+        }
+    }
+
+    func fetchPostsByUser(userId: String, completion: @escaping (_ medias: [Post?], _ error: Error?) -> Void) {
+
+        if shouldReturnError {
+            completion([], MockServiceError.getposts)
+        } else {
+            let api = "GetPosts"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
+                if let json = fakeResponse.json,
+                    let list = json[FakeResponsesJson.object.rawValue] as? [Post] {
+
+                    completion(list, nil)
+                } else {
+                    completion([], fakeResponse.error)
+                }
+            } else {
+                completion([], QNAError.getPosts)
+            }
+        }
+    }
+
+    func fetchComments(postId: String, completion: @escaping (_ medias: [Comment?], _ error: Error?) -> Void) {
+
+        if shouldReturnError {
+            completion([], MockServiceError.getComments)
+        } else {
+            let api = "GetComments"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
+                if let json = fakeResponse.json,
+                    let list = json[FakeResponsesJson.object.rawValue] as? [Comment] {
+
+                    let results = list.filter { $0.postId == postId }
+                    
+                    completion(results, nil)
+                } else {
+                    completion([], fakeResponse.error)
+                }
+            } else {
+                completion([], QNAError.getPosts)
+            }
+        }
+    }
+
+    // MARK: - follow
+    func fetchFollowing(userId: String, completion: @escaping ([String], _ error: Error?)-> Void) {
+        if shouldReturnError {
+            completion([], MockServiceError.getFollowing)
+        } else {
+            let api = "GetFollowing"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
+                if let json = fakeResponse.json,
+                    let list = json[FakeResponsesJson.object.rawValue] as? [String] {
+
+                    completion(list, nil)
+                } else {
+                    completion([], fakeResponse.error)
+                }
+            } else {
+                completion([], QNAError.getFollowings)
             }
         }
     }

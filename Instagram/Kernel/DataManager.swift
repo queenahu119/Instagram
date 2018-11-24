@@ -7,29 +7,13 @@
 //
 
 import Foundation
+import UIKit
 import Parse
-
-protocol DataManagerProtocol {
-
-    func fetchImage(imageFile: PFFile, completion:@escaping (UIImage?, URLResponse?, Error?)->())
-    func fetchAllUser(completion: @escaping ([ProfilData])-> Void)
-    func fetchUserData(userId: String, completion:@escaping (ProfilData?, URLResponse?, Error?)->())
-    func fetchMedias(userId: String, completion: @escaping (_ success : Bool, _ medias: [PFFile], _ error: Error?) -> () )
-    func fetchPosts(userId: String, completion: @escaping (_ success : Bool, _ medias: [Post?], _ error: Error?) -> () )
-    func fetchComments(postId: String, completion: @escaping (_ success : Bool, _ medias: [Comment?], _ error: Error?) -> () )
-
-    func addFollowing(id: String, completion: @escaping (Bool)-> Void)
-    func deleteFollowing(id: String, completion: @escaping (Bool)-> Void)
-    func fetchFollowing(userId: String, completion: @escaping ([String])-> Void)
-
-
-    func addMedia(info: [String: AnyObject], completion: @escaping (Bool)-> Void)
-    func addComment(data: [String: String], completion: @escaping (Bool)-> Void)
-}
 
 class DataManager : NSObject {
 
     lazy var dataAdapter = DataAdapterFactory.sharedInstance.dataAdapter
+    lazy var session = URLSession(configuration: .default)
     var imageCache = NSCache<NSString, UIImage>()
 
     func isUserLogin() -> Bool {
@@ -48,7 +32,7 @@ class DataManager : NSObject {
         }
     }
 
-    func logInWithUsername(_ username: String, password: String, completion: @escaping (Bool, Error?)-> ()) {
+    func logIn(_ username: String, password: String, completion: @escaping (Bool, Error?)-> ()) {
 
         dataAdapter.logIn(username, password: password) { (user, error) in
             if user != nil {
@@ -59,35 +43,34 @@ class DataManager : NSObject {
         }
     }
     
-    func fetchImage(imageFile: PFFile, completion:@escaping (UIImage?, URLResponse?, Error?)->()) {
+    func fetchImage(imageUrl: URL, completion:@escaping (UIImage?, Error?)->()) {
 
-        let imageKey = imageFile.url! as NSString
+        let imageKey = imageUrl.absoluteString as NSString
         if let cacheImage = self.imageCache.object(forKey: imageKey) {
-
-            completion(cacheImage, nil, nil)
+            completion(cacheImage, nil)
         } else {
 
-            // download image
-            imageFile.getDataInBackground { (data, error) in
-
-//                sleep(1) // test cache
-
-                if let imageData = data {
-                    if let imageToDisplay = UIImage(data:imageData) {
-                        self.imageCache.setObject(imageToDisplay, forKey: imageKey)
-
-                        completion(imageToDisplay, nil, error)
-                    }
+            let task = session.dataTask(with: imageUrl) { (data, response, error) in
+                guard
+                    let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
+                    let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
+                    let data = data, error == nil,
+                    let image = UIImage(data: data)
+                    else {
+                        completion(nil, error)
+                        return
                 }
-            }
 
+                self.imageCache.setObject(image, forKey: imageKey)
+                completion(image, nil)
+            }
+            task.resume()
         }
     }
 
     func fetchAllUser(completion: @escaping ([ProfilData])-> Void) {
 
         var list: [ProfilData] = [ProfilData]()
-
 
         let query = PFUser.query()
 
@@ -108,7 +91,7 @@ class DataManager : NSObject {
                             let email = String(describing: user.email ?? "")
                             let bio = String(describing: user["bio"] ?? "")
 
-                            let accountData = ProfilData(id: id, username: username, fullname: fullName, email: email, profilePicture: user["profile_picture"] as? PFFile, bio: bio)
+                            let accountData = ProfilData(id: id, username: username, fullname: fullName, email: email, profilePicture: user["profile_picture"] as? URL, bio: bio)
 
                             list.append(accountData)
                         }
@@ -121,199 +104,74 @@ class DataManager : NSObject {
 
     }
 
-    func fetchUserData(userId: String, completion:@escaping (ProfilData?, URLResponse?, Error?)->()) {
+    func fetchUserData(userId: String, completion:@escaping (ProfilData?, Error?)->()) {
 
-        var accountData: ProfilData = ProfilData()
-
-        do {
-            let query = PFUser.query()
-            query?.whereKey("objectId", equalTo:userId)
-
-            if let owner = try query?.getFirstObject() as? PFUser {
-
-                let username = String(describing: owner.username ?? "")
-                let fullName = String(describing: owner["full_name"] ?? "")
-                let email = String(describing: owner.email ?? "")
-                let bio = String(describing: owner["bio"] ?? "")
-
-                accountData = ProfilData(id: owner.objectId!, username: username, fullname: fullName, email: email, profilePicture: owner["profile_picture"] as? PFFile, bio: bio)
-
-                completion(accountData, nil, nil)
-            }
-        } catch {
-            print("\(#function), get User's object failed.")
-
+        dataAdapter.fetchAccountInfo(userId: userId) { (data, error) in
+            completion(data, error)
         }
-
     }
 
-    func fetchPosts(userId: String, completion: @escaping (_ success : Bool, _ medias: [Post?], _ error: Error?) -> () ) {
+    func fetchPostsByUser(userId: String, completion: @escaping (_ medias: [Post?], _ error: Error?) -> ()) {
 
-        do {
-            let query = PFUser.query()
-            query?.whereKey("objectId", equalTo:userId)
+        dataAdapter.fetchPostsByUser(userId: userId) { (posts, error) in
+            completion(posts, error)
+        }
+    }
 
-            if let userData = try query?.getFirstObject() as? PFUser {
 
-                let getImagesQuery = PFQuery(className: "Photos")
+    func fetchComments(postId: String, completion: @escaping (_ medias: [Comment?], _ error: Error?) -> () ) {
 
-                getImagesQuery.whereKey("user", equalTo: userData)
+        dataAdapter.fetchComments(postId: postId) { (comments, error) in
+            completion(comments, error)
+        }
+    }
 
-                getImagesQuery.findObjectsInBackground(block: { (objects, error) in
-                    if let error = error {
-                        print("error:\(error)")
-                        completion(false, [], error)
 
-                    } else if let posts = objects {
+    func fetchMedias(userId: String, completion: @escaping (_ medias: [Post]?) -> () ) {
+        var followings: [String] = [""]
+        var totalPosts: [Post]? = nil
 
-                        var list = [Post]()
+        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+            let group = DispatchGroup()
 
-                        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+            // step1: get followings
+            if let userID = CurrentAccount.shared().baseUserId {
+                group.enter()
 
-                            for post in posts {
+                self.fetchFollowing(userId: userID, completion: { (users, error) in
+                    if error != nil {
+                        followings = users
+                        followings.append(userID)
 
-                                var data: Post = Post()
-                                data.id = post.objectId
-                                data.userId = (post["user"] as? PFUser)?.objectId
-
-                                data.username = userData.username
-                                data.profileImageUrl = userData["profile_picture"] as? PFFile
-                                data.createdTime = post.createdAt
-                                data.imageUrls = [post["imageFile"] as? PFFile]
-
-                                let group = DispatchGroup()
-                                group.enter()
-
-                                self.fetchComments(postId: post.objectId!, completion: { (sucess, objects, error) in
-                                    if sucess {
-                                        data.comments = objects
-                                    }
-                                    group.leave()
-                                })
-
-                                group.wait()
-                                list.append(data)
-                            }
-
-                            DispatchQueue.main.async {
-                                completion(true, list, nil)
-                            }
-                        }
                     }
+                    group.leave()
+                })
+                group.wait()
+            }
+
+            // step2: get all posts of followings
+            for user in followings {
+                group.enter()
+                print("fetchPosts user: ", user)
+
+                self.fetchPostsByUser(userId: user, completion: { (posts, error) in
+                    if error == nil {
+                        if !posts.isEmpty {
+                            totalPosts = posts as? [Post]
+                        }
+                    } else {
+                        print(error?.localizedDescription)
+                    }
+                    group.leave()
                 })
             }
 
-        } catch {
-            print("\(#function), get User's object failed.")
-        }
+            group.wait()
 
-    }
-
-
-    func fetchComments(postId: String, completion: @escaping (_ success : Bool, _ medias: [Comment?], _ error: Error?) -> () ) {
-
-        var list = [Comment]()
-
-        do {
-            let postQuery = PFQuery(className: "Photos")
-            postQuery.whereKey("objectId", equalTo: postId)
-
-            let postObject = try postQuery.getFirstObject()
-
-            let commentQuery = PFQuery(className: "Comments")
-            commentQuery.whereKey("parent", equalTo: postObject)
-            commentQuery.order(byAscending: "createdAt")
-
-            commentQuery.findObjectsInBackground(block: { (objects, error) in
-
-                if let error = error {
-                    print("error:\(error)")
-                    completion(false, [], error)
-
-                } else if let posts = objects {
-
-                    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-
-                        for post in posts {
-                            var commData: Comment = Comment()
-
-                            if let parent = post["parent"] as? PFObject {
-                                commData.postId = parent.objectId
-                            }
-
-                            commData.text = post["text"] as? String
-
-                            if let user = post["user"] as? PFObject {
-                                commData.userId = user.objectId
-
-                                let group = DispatchGroup()
-                                group.enter()
-
-                                self.fetchUserData(userId: commData.userId! , completion: { (object, response, error) in
-                                    if let userData = object {
-                                        commData.username = userData.username
-                                        commData.profileImageUrl = userData.profilePicture
-                                    }
-                                    group.leave()
-                                })
-
-                                group.wait()
-                                list.append(commData)
-                            }
-                        }
-
-                        DispatchQueue.main.async {
-                            completion(true, list, nil)
-                        }
-                    }
-
-                }
-            })
-
-
-        } catch {
-            print("\(#function), Photos table: get object failed.")
-        }
-
-    }
-
-
-    func fetchMedias(userId: String, completion: @escaping (_ success : Bool, _ medias: [PFFile], _ error: Error?) -> () ) {
-
-        do {
-            let query = PFUser.query()
-            query?.whereKey("objectId", equalTo:userId)
-
-            if let userData = try query?.getFirstObject() as? PFUser {
-
-                let getImagesQuery = PFQuery(className: "Photos")
-
-                getImagesQuery.whereKey("user", equalTo: userData)
-
-                getImagesQuery.findObjectsInBackground(block: { (objects, error) in
-                    if let error = error {
-                        print("error:\(error)")
-                        completion(false, [], error)
-
-                    } else if let posts = objects {
-
-                        var list = [PFFile]()
-
-                        for post in posts {
-
-                            if let imageFile = post["imageFile"] as? PFFile {
-                                list.append(imageFile)
-                            }
-                        }
-
-                        completion(true, list, nil)
-                    }
-                })
+            DispatchQueue.main.async {
+                completion(totalPosts)
             }
-        } catch {
-            print("\(#function), get PFUser's object failed.")
         }
-
     }
 
     func addFollowing(id: String, completion: @escaping (Bool)-> Void) {
@@ -388,38 +246,11 @@ class DataManager : NSObject {
 
     }
 
-    func fetchFollowing(userId: String, completion: @escaping ([String])-> Void) {
+    func fetchFollowing(userId: String, completion: @escaping ([String], _ error: Error?)-> Void) {
 
-        var list: [String] = [String]()
-
-        do {
-            let query = PFUser.query()
-
-            query?.whereKey("objectId", equalTo:userId)
-
-            if let followId = try query?.getFirstObject() as? PFUser {
-
-                let query = PFQuery(className: "Following")
-
-                query.whereKey("user", equalTo: followId)
-
-                query.findObjectsInBackground(block: { (objects, error) in
-                    if let objects = objects {
-                        for object in objects {
-                            if let userObject = object["following"] as? PFUser{
-                                list.append(userObject.objectId!)
-                            }
-
-
-                        }
-                    }
-                    completion(list)
-                })
-            }
-        } catch {
-            print("\(#function), get PFUser's object failed.")
+        dataAdapter.fetchFollowing(userId: userId) { (followings, error) in
+            completion(followings, error)
         }
-
     }
 
     //MARK: -

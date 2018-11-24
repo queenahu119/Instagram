@@ -59,67 +59,58 @@ class ProfileViewModel: NSObject {
 
     func getImageOfCell(at indexPath: IndexPath, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
 
-        if let imageFile = cellViewModel[indexPath.row].imageFile {
-
-            dataManager.fetchImage(imageFile: imageFile) { (image, response, error) in
-                completion(image, response, error)
+        if let imageUrl = cellViewModel[indexPath.row].imageUrl {
+            dataManager.fetchImage(imageUrl: imageUrl) { (image, error) in
+                completion(image, nil, error)
             }
         }
     }
 
     func getProfileImage(url: URL?, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
 
-        if let imageFile = self.profile.profilePicture {
-
-            dataManager.fetchImage(imageFile: imageFile, completion: { (image, response, error) in
-
-                completion(image, response, error)
+        if let imageUrl = self.profile.profilePicture {
+            dataManager.fetchImage(imageUrl: imageUrl, completion: { (image, error) in
+                completion(image, nil, error)
             })
         }
     }
     
     func initFetchUserInfo() {
-        fetchProfileData()
 
-        fetchMedias()
+        fetchProfileData()
+        fetchOwnMedias()
     }
 
     func fetchProfileData() {
-
-        guard let objectId = PFUser.current()?.objectId else {
+        guard let userId = CurrentAccount.shared().baseUserId else {
             print("Fail to get objectId.")
             return
         }
 
-        dataManager.fetchUserData(userId:objectId) { [weak self] (profilData, response, error) in
+        dataManager.fetchUserData(userId: userId) { [weak self] (profilData, error) in
             if let profilData = profilData {
-
                 self?.profile = profilData
-
             }
         }
-
     }
 
-    func fetchMedias() {
+    func fetchOwnMedias() {
         self.isLoading = true
 
-        guard let objectId = PFUser.current()?.objectId else {
+        guard let userId = CurrentAccount.shared().baseUserId else {
             print("Fail to get objectId.")
             self.isLoading = false
             return
         }
 
-        dataManager.fetchMedias(userId:objectId) { (success, posts, error) in
-
+        dataManager.fetchMedias(userId: userId) { (posts) in
             self.isLoading = false
-
-            if success {
+            if let posts = posts {
                 var list = [PhotoListCellViewModel]()
-                for imageFile in posts {
-
-                    list.append(PhotoListCellViewModel(titleText: "", descText: "", imageFile: imageFile, dateText: ""))
-
+                for post in posts {
+                    if let url = post.imageUrls.first {
+                        list.append(PhotoListCellViewModel(titleText: "", descText: "", imageUrl: url, dateText: ""))
+                    }
                 }
                 self.cellViewModel = list
             }
@@ -130,6 +121,6 @@ class ProfileViewModel: NSObject {
 struct PhotoListCellViewModel {
     let titleText: String
     let descText: String
-    let imageFile: PFFile?
+    let imageUrl: URL?
     let dateText: String
 }

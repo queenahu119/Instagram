@@ -61,8 +61,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
     override func viewWillAppear(_ animated: Bool) {
 
         viewModel.initFetch()
-
-//        viewModel.fetchMedias()
+        viewModel.fetchAllMedias()
     }
 
     func setUpNavBar() {
@@ -87,7 +86,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
 
     func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         print(#function)
-        viewModel.fetchMedias()
+        viewModel.fetchAllMedias()
     }
     // MARK: - Table view data source
 
@@ -111,13 +110,13 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         cell.textComments.text = comment
 
 //        print("text: [\(cell.textComments.text)]")
-        viewModel.getProfileImageOfCell(at: indexPath as IndexPath) { (image, response, error) in
+        viewModel.getProfileImageOfCell(at: indexPath as IndexPath) { (image, error) in
             DispatchQueue.main.async {
                 cell.profile.image = image
             }
         }
 
-        viewModel.getImageOfCell(at: indexPath as IndexPath) { (image, response, error) in
+        viewModel.getImageOfCell(at: indexPath as IndexPath) { (image, error) in
             DispatchQueue.main.async {
                 cell.imageFile.image  = image
             }
@@ -133,10 +132,8 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         cell.tag = indexPath.row
         cell.delegate = self
 
-//        print("start:")
         cell.setNeedsUpdateConstraints()
         cell.setNeedsLayout()
-//        print("end.")
 
         return cell
     }

@@ -27,7 +27,7 @@ struct Comment {
     var postId: String?
     var userId: String?
     var username: String?
-    var profileImageUrl: PFFile?
+    var profileImageUrl: URL?
     var replyUser: String?
     var text: String?
     var isLike: Bool
@@ -35,7 +35,7 @@ struct Comment {
     init(postId: String? = nil,
          userId: String? = nil,
          username: String? = nil,
-         profileImageUrl: PFFile? = nil,
+         profileImageUrl: URL? = nil,
          replyUser: String? = nil,
          text: String? = nil,
          isLike: Bool = false) {
@@ -53,22 +53,22 @@ struct Post {
     var id: String?
     var userId: String?
     var username: String?
-    var profileImageUrl: PFFile?
+    var profileImageUrl: URL?
     var location: String?
     var numOfLike: String?
     var comments: [Comment?]
 
-    var imageUrls: [PFFile?]
+    var imageUrls: [URL?]
     var createdTime: Date?
 
     init(id: String? = nil,
          userId: String? = nil,
          username: String? = nil,
-         profileImageUrl: PFFile? = nil,
+         profileImageUrl: URL? = nil,
          location: String? = nil,
          numOfLike: String? = nil,
          comments: [Comment] = [],
-         imageUrls: [PFFile] = [],
+         imageUrls: [URL] = [],
          createdTime: Date? = nil
         ) {
         self.id = id

@@ -14,7 +14,7 @@ struct ProfilData {
     let username: String
     let fullname : String
     let email: String
-    let profilePicture: PFFile?
+    let profilePicture: URL?
     let bio: String
 
     var post: Int
@@ -35,7 +35,7 @@ struct ProfilData {
         self.following = 0
     }
 
-    init(id: String, username: String, fullname: String, email: String, profilePicture: PFFile?, bio:String) {
+    init(id: String, username: String, fullname: String, email: String, profilePicture: URL?, bio:String) {
         self.id = id
         self.username = username
         self.fullname = fullname

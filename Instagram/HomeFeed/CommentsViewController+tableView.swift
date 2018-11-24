@@ -35,7 +35,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 
         cell.profileImage.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
 
-        viewModel.getImageOfCell(at: indexPath) { (image, response, error) in
+        viewModel.getImageOfCell(at: indexPath) { (image, error) in
             if error == nil {
                 DispatchQueue.main.async {
                     cell.profileImage.image = image

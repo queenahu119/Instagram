@@ -8,9 +8,10 @@
 
 import Foundation
 
+let DefaultDelay: Double = 1
+
 enum FakeResponsesJson: String {
-    case login
-    case signup
+    case object = "responseObject"
 
 }
 

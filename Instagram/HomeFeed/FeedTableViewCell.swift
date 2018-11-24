@@ -141,16 +141,12 @@ class FeedTableViewCell: UITableViewCell {
 //        newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
 //        textComments.frame = newFrame
 
-
-        textComments.backgroundColor = UIColor.brown
-
-
         let width = textComments.frame.width
 
         let sizeThatFits = textComments.sizeThatFits(CGSize(width: width+10, height: CGFloat(MAXFLOAT)))
 
 
-        print("sizeThatFits: ", sizeThatFits.height)
+//        print("sizeThatFits: ", sizeThatFits.height)
         textComments.snp.makeConstraints { (make) in
             make.left.equalTo(self.contentView.snp.left).offset(padding.left)
             make.right.equalTo(self.contentView.snp.right).offset(padding.right)
