@@ -6,8 +6,7 @@
 //  Copyright © 2018 queenahu. All rights reserved.
 //
 
-import Foundation
-import Parse
+import UIKit
 
 class CommentsViewModel: NSObject {
     let dataManager : DataManager
@@ -111,15 +110,13 @@ class CommentsViewModel: NSObject {
         data["post_id"] = postId
         data["replay_to_user"] = replayToUserId ?? ""
 
-        dataManager.addComment(data: data) { [weak self] (success) in
+        dataManager.addComment(data: data) { [weak self] (error) in
             self?.isLoading = false
 
-            if (success) {
-
-                self?.postAfterCompletion!(success, nil, nil)
+            if error != nil {
+                self?.postAfterCompletion!(false, "Comment Could Not Be Posted!", "Please try again later.")
             } else {
-
-                self?.postAfterCompletion!(success, "Comment Could Not Be Posted!", "Please try again later.")
+                self?.postAfterCompletion!(true, nil, nil)
             }
         }
     }

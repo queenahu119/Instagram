@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Parse
 
 class HomeFeedViewModel: NSObject {
 
@@ -115,6 +114,9 @@ class HomeFeedViewModel: NSObject {
         }
     }
 
+    func logOut() {
+        dataManager.logOut()
+    }
 
 }
 

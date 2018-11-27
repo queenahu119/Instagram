@@ -13,8 +13,7 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
     let HeaderCellId = "HeaderCell"
     let ProfileCellId = "ProfileCell"
 
-    var dicOfInfo = [String: String]()
-
+    var infoList = [Profile]()
     var profileImage: UIImage!
 
     let activityIndicator = UIActivityIndicatorView()
@@ -46,11 +45,8 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
         }
         
         viewModel.reloadTableViewClosure = {
+            self.infoList = self.viewModel.getProfile()
             self.tableView.reloadData()
-        }
-
-        viewModel.reloadAccountInfoClosure = {
-            self.dicOfInfo = self.viewModel.getAccountInfo()
         }
 
         viewModel.updateInfoAfterCompletion = { (success, title, message) in
@@ -65,9 +61,6 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
         }
 
         viewModel.initFetch()
-
-
-
     }
 
     // MARK: - Table view data source
@@ -84,13 +77,13 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ProfileCellId, for: indexPath) as! ProfileCell
 
-        let info = viewModel.getCellViewModel(at: indexPath)
-        cell.labelField.text = info["fieldName"] ?? ""
-        cell.inputText.text = info["data"] ?? ""
-        cell.inputText.delegate = self
-        cell.inputText.tag = indexPath.row
-
-        cell.inputText.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
+        if let info = viewModel.getCellViewModel(at: indexPath) {
+            cell.labelField.text = info.field
+            cell.inputText.text = info.data
+            cell.inputText.delegate = self
+            cell.inputText.tag = indexPath.row
+            cell.inputText.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
+        }
 
         return cell
     }
@@ -105,7 +98,9 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
             headerView.profileImage.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
 
             viewModel.getProfileImage(completion: { (image, response, error) in
-                self.headerView.profileImage.image  = image
+                DispatchQueue.main.async {
+                    self.headerView.profileImage.image  = image
+                }
             })
 
             headerView.changePhotoButton.addTarget(self, action: #selector(onChangeProfilePhoto), for: .touchUpInside)
@@ -137,10 +132,7 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
     }
 
     @objc func onDone() {
-
-        print("dicOfInfo: ", dicOfInfo)
-
-        viewModel.submitProfile(info: dicOfInfo, profileImage: headerView?.profileImage.image)
+        viewModel.submitProfile(info: infoList, profileImage: headerView?.profileImage.image)
     }
 
     @objc func onCancel() {
@@ -180,23 +172,11 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
-        switch textField.tag {
-        case 0:
-            dicOfInfo["Name"] = textField.text
-            break
-        case 1:
-            dicOfInfo["Username"] = textField.text
-            break
-        case 2:
-            dicOfInfo["Email"] = textField.text
-            break
-        case 3:
-            dicOfInfo["Bio"] = textField.text
-            break
-        default:
-            break
+        if textField.tag >= self.infoList.count {
+            return
         }
 
+        self.infoList[textField.tag].data = textField.text ?? ""
     }
 
     //MARK: - UIImagePickerControllerDelegate

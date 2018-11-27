@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Parse
+import UIKit
 
 struct InstagramStub {
     static func detectAndConfigure() {
@@ -67,6 +67,7 @@ struct InstagramStub {
         configPosts(responses)
         configFollowing(responses)
 
+        configAllUsers(responses)
     }
 
     static func configProfile(_ responses: FakeResponses) {
@@ -147,7 +148,21 @@ struct InstagramStub {
         responses.addResponse(
             FakeResponse(pattern: ".*GetFollowing.*", json: [
                 FakeResponsesJson.object.rawValue:
-                    ["2222", "3333", "4444", "5555"]
+                    ["2222", "3333", "5555"]
+                ], isLogin: false))
+    }
+
+    fileprivate static func configAllUsers(_ responses: FakeResponses) {
+        let account2 = ProfilData(id: "2222", username: "apple 2222", fullname: "apple H", email: "apple@apple.info", profilePicture: URL(string: "https://sguru.org/wp-content/uploads/2017/04/facebook-profile-photo-for-beautiful-girls-face-26.jpg")!, bio: "")
+        let account3 = ProfilData(id: "3333", username: "orage 3333", fullname: "orage Wang", email: "orage@apple.info", profilePicture: URL(string: "https://www.tricksclues.com/wp-content/uploads/2016/12/Cool-And-Stylish-Girls-With-Attitude-DP.jpg")!, bio: "")
+        let account4 = ProfilData(id: "4444", username: "Mary01 4444", fullname: "Mary Lin", email: "Mary01@Mary01.info", profilePicture: URL(string: "https://lh3.googleusercontent.com/-7IiOvxhzDz8/WdDwAsUxd_I/AAAAAAAAw9M/2gRvACyKAO4NlB5DXpT-DuFYN6Wi4pqdQCHMYCw/s1600/Travis-Fimmel-awesome-dp-profile-pics-MyWhatsappImages.com-484.jpg")!, bio: "")
+        let account5 = ProfilData(id: "5555", username: "Darcex 5555", fullname: "Darcex Kua", email: "Darcex@Darcex.info", profilePicture: URL(string: "https://sguru.org/wp-content/uploads/2017/04/facebook-profile-photo-for-beautiful-girls-face-25.jpg")!, bio: "")
+        let account6 = ProfilData(id: "6666", username: "Victoria's Secret 6666", fullname: "Victoria's Secret", email: "Victoria'sSecret@gmail.com", profilePicture: URL(string: "https://image.tmdb.org/t/p/original/1q4fdyvViFVSDncoP4jRym6IlEw.jpg")!, bio: "")
+
+        responses.addResponse(
+            FakeResponse(pattern: ".*GetAllUsers.*", json: [
+                FakeResponsesJson.object.rawValue:
+                    [account2, account3, account4, account5, account6]
                 ], isLogin: false))
     }
 

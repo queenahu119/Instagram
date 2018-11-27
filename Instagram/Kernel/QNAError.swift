@@ -15,6 +15,11 @@ public enum QNAError: Error {
     case getPosts
     case getComments
     case getFollowings
+    case getAllUsers
+    case deleteFollowing(comment: String?)
+    case addFollowing(comment: String?)
+    case addMedia(comment: String?)
+    case addComment(comment: String?)
 }
 
 extension QNAError: LocalizedError {
@@ -32,6 +37,16 @@ extension QNAError: LocalizedError {
             return NSLocalizedString("Could not get comments. ", comment: "")
         case .getFollowings:
             return NSLocalizedString("Could not get followings. ", comment: "")
+        case .getAllUsers:
+            return NSLocalizedString("Could not get all users. ", comment: "")
+        case .deleteFollowing(comment: let comment):
+            return NSLocalizedString("Delete followings failed. ", comment: comment ?? "")
+        case .addFollowing(comment: let comment):
+            return NSLocalizedString("Add followings failed ", comment: comment ?? "")
+        case .addMedia(comment: let comment):
+            return NSLocalizedString("Add media failed ", comment: comment ?? "")
+        case .addComment(comment: let comment):
+            return NSLocalizedString("Add comment failed ", comment: comment ?? "")
         }
 
     }

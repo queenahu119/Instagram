@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Parse
 
 
 protocol HomeFeedCellDelegate : class {
@@ -73,7 +72,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
     }
 
     @IBAction func logOutUser(_ sender: Any) {
-        PFUser.logOut()
+        viewModel.logOut()
 
         Helper.displayAlert(vc: self, title: "Log Out Successfully", message: "") {
             self.navigationController?.navigationBar.isHidden = true

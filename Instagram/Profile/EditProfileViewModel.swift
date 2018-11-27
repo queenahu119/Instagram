@@ -6,9 +6,19 @@
 //  Copyright © 2018 queenahu. All rights reserved.
 //
 
-import Foundation
-import Parse
+import UIKit
 
+enum ProfileField: String {
+    case name = "Name"
+    case username = "Username"
+    case email = "Email"
+    case bio = "Bio"
+}
+
+struct Profile {
+    var field: String
+    var data: String
+}
 
 class EditProfileModel: NSObject {
 
@@ -27,9 +37,8 @@ class EditProfileModel: NSObject {
         }
     }
 
-    private var accountData: [[String: String]] {
+    private var accountData: [Profile] {
         didSet {
-            self.reloadAccountInfoClosure?()
             self.reloadTableViewClosure?()
         }
     }
@@ -47,42 +56,28 @@ class EditProfileModel: NSObject {
     func initFetch() {
 
         fetchProfileData()
-
     }
 
-    func getAccountInfo() -> [String: String] {
-
-        var info: [String: String] = [:]
-        for dic in accountData {
-
-            if let fieldName = dic["fieldName"], let data = dic["data"] {
-//                print("[\(fieldName)]: \(data)")
-                info.updateValue(data, forKey: fieldName)
-            }
-        }
-
-        return info
+    func getProfile() -> [Profile] {
+        return accountData
     }
 
     func getProfileImage(completion: @escaping (UIImage?, URLResponse?, Error?)->()) {
 
         if let imageFile = self.profilePicture {
-
             dataManager.fetchImage(imageUrl: imageFile) { (image, error) in
                 completion(image, nil, error)
             }
         }
-
     }
 
 
-    func getCellViewModel( at indexPath: IndexPath ) -> [String: String?] {
+    func getCellViewModel( at indexPath: IndexPath ) -> Profile? {
         return accountData[indexPath.row]
     }
 
     //MARK: - callback
     var reloadTableViewClosure: (()->())?
-    var reloadAccountInfoClosure: (()->())?
     var showAlertClosure: ((_ title: String, _ message: String)->())?
     var updateLoadingStatus: (()->())?
     var updateInfoAfterCompletion: ((Bool, String?, String?)->())?
@@ -92,56 +87,36 @@ class EditProfileModel: NSObject {
 
     func fetchProfileData() {
 
-        dataManager.fetchUserData(userId: (PFUser.current()?.objectId)!) { [weak self] (profilData, error) in
-            if let profilData = profilData {
-                self?.accountData = [
-                    ["fieldName": "Name", "data": profilData.fullname],
-                    ["fieldName": "Username", "data": profilData.username],
-                    ["fieldName": "Email", "data": profilData.email],
-                    ["fieldName": "Bio", "data": profilData.bio]]
+        guard let userID = CurrentAccount.shared().baseUserId else {
+            return
+        }
 
-                self?.profilePicture = profilData.profilePicture
+        dataManager.fetchUserData(userId: userID) { [weak self] (profile, error) in
+            if let profile = profile {
+
+                self?.accountData = [
+                    Profile(field: ProfileField.name.rawValue, data: profile.fullname),
+                    Profile(field: ProfileField.username.rawValue, data: profile.username),
+                    Profile(field: ProfileField.email.rawValue, data: profile.email),
+                    Profile(field: ProfileField.bio.rawValue, data: profile.bio)]
+
+                self?.profilePicture = profile.profilePicture
             }
         }
     }
 
-    func submitProfile(info: [String: String], profileImage: UIImage?) {
+    func submitProfile(info: [Profile], profileImage: UIImage?) {
 
         self.isLoading = true
+        dataManager.updateProfile(info, profileImage) { [weak self] (error) in
+            self?.isLoading = false
 
-        let scoreQuery = PFUser.query()
-        scoreQuery?.whereKey("objectId", equalTo: PFUser.current()?.objectId)
-        scoreQuery?.getFirstObjectInBackground { (object, error) -> Void in
-
-            if let error = error {
-                print("update account: ", error)
-            } else if let user = object as? PFUser {
-
-                user.username = info["Username"]
-                user["full_name"] = info["Name"] ?? ""
-                user.email = info["Email"]
-                user["bio"] = info["Bio"] ?? ""
-
-                if let image = profileImage, let imageData = image.toJPEGNSData(.lowest) {
-                    let imageFile = PFFile(name: "image.png", data: imageData)
-                    user["profile_picture"] = imageFile
-                }
-
-                user.saveInBackground(block: { (success, error) in
-                    
-                    self.isLoading = false
-                    if (success) {
-
-                        self.updateInfoAfterCompletion!(success, "Update Successfully.", "")
-                    } else {
-
-                        self.updateInfoAfterCompletion!(success, "Have some problems.", "Please try again later.")
-                    }
-                })
+            if error == nil {
+                self?.updateInfoAfterCompletion!(true, "Update Successfully.", "")
+            } else {
+                self?.updateInfoAfterCompletion!(false, "Have some problems.", "Please try again later.")
             }
-
         }
-
     }
 }
 

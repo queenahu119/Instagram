@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import Parse
-
 
 class PostViewModel: NSObject {
 
@@ -34,21 +32,16 @@ class PostViewModel: NSObject {
     }
 
     func postMedia(info: [String: AnyObject]) {
-
         self.isLoading = true
 
-        dataManager.addMedia(info: info) { [weak self] (success) in
+        dataManager.addMedia(info: info) { [weak self] (error) in
             self?.isLoading = false
-
-            if (success) {
-
-                self?.postAfterCompletion!(success, "Image Posted!", "Your image have been posted sucessfully.")
+            if error == nil {
+                self?.postAfterCompletion!(true, "Image Posted!", "Your image have been posted sucessfully.")
             } else {
-
-                self?.postAfterCompletion!(success, "Image Could Not Be Posted!", "Please try again later.")
+                self?.postAfterCompletion!(false, "Image Could Not Be Posted!", "Please try again later.")
             }
         }
-
     }
 }
 

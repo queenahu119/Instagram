@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Parse
 import SnapKit
 
 class LoginViewController: UIViewController, UITextFieldDelegate {

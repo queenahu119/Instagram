@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Parse
+import UIKit
 
 class DiscoverPeopleViewModel: NSObject {
 
@@ -19,13 +19,17 @@ class DiscoverPeopleViewModel: NSObject {
 
     private var followings: [String] = [""] {
         didSet {
-            self.reloadTableViewClosure?()
+            DispatchQueue.main.async {
+                self.reloadTableViewClosure?()
+            }
         }
     }
 
     private var cellViewModel : [PeopleCellViewModel] = [PeopleCellViewModel](){
         didSet {
-            self.reloadTableViewClosure?()
+            DispatchQueue.main.async {
+                self.reloadTableViewClosure?()
+            }
         }
     }
     
@@ -73,53 +77,48 @@ class DiscoverPeopleViewModel: NSObject {
 
     func fetchUsers() {
         self.isLoading = true
-
         var allUser: [ProfilData] = []
 
-        if PFUser.current() == nil {
-
+        guard let userID = CurrentAccount.shared().baseUserId else {
+            print("No one login.")
             self.isLoading = false
-
             return
         }
 
-        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+        DispatchQueue.global(qos: .background).async { [unowned self] in
             let group = DispatchGroup()
             group.enter()
-
-            self.dataManager.fetchAllUser { (users) in
-                allUser = users
+            self.dataManager.fetchAllUser { (users, error) in
+                if error == nil {
+                    allUser = users
+                }
                 group.leave()
             }
 
             group.enter()
+            self.dataManager.fetchFollowing(userId: userID, completion: { (users, error) in
+                self.followings = users
 
-            if let userId = CurrentAccount.shared().baseUserId {
-                self.dataManager.fetchFollowing(userId: userId, completion: { (users, error) in
-                    self.followings = users
-
-                    group.leave()
-                })
-            }
+                group.leave()
+            })
             group.wait()
 
-            DispatchQueue.main.async { [unowned self] in
+            DispatchQueue.main.async { [weak self] in
                 var list = [PeopleCellViewModel]()
 
                 for user in allUser {
-
                     var isFollow: Bool = false
 
-                    if self.followings.contains(where: {$0 == user.id}) {
-                        isFollow = true
+                    if let followings = self?.followings {
+                        if followings.contains(where: {$0 == user.id}) {
+                            isFollow = true
+                        }
                     }
 
                     list.append(PeopleCellViewModel(userId: user.id, usernameText: user.username, fullnameText: user.fullname, imageUrl: user.profilePicture, isFollowing: isFollow))
-
                 }
-                self.cellViewModel = list
-
-                self.isLoading = false
+                self?.cellViewModel = list
+                self?.isLoading = false
             }
         }
 

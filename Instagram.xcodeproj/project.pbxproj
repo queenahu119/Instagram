@@ -129,7 +129,10 @@
 		9BE2D774201C4C1200BEAE97 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		9BEB43322003334900D1A014 /* PostViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostViewModel.swift; sourceTree = "<group>"; };
 		9F78A2D89F16312A2E50DA46 /* Pods-InstagramTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstagramTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-InstagramTests/Pods-InstagramTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CF66C1564EDC46D687F18D8D /* Pods-Instagram.tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.tests.xcconfig"; path = "Pods/Target Support Files/Pods-Instagram/Pods-Instagram.tests.xcconfig"; sourceTree = "<group>"; };
 		D290081E4ACE13733692A4F7 /* Pods_Instagram.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Instagram.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F342A49BC34AC78D5AC683A5 /* Pods-InstagramUITests.tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstagramUITests.tests.xcconfig"; path = "Pods/Target Support Files/Pods-InstagramUITests/Pods-InstagramUITests.tests.xcconfig"; sourceTree = "<group>"; };
+		F4584678C94364D8B60C6C4F /* Pods-InstagramTests.tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstagramTests.tests.xcconfig"; path = "Pods/Target Support Files/Pods-InstagramTests/Pods-InstagramTests.tests.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -332,6 +335,9 @@
 				97854031EA6B22090ED51BF0 /* Pods-InstagramTests.release.xcconfig */,
 				76D8DA42CD99F6F4CD46D018 /* Pods-InstagramUITests.debug.xcconfig */,
 				324E16505ED5423B918D72DF /* Pods-InstagramUITests.release.xcconfig */,
+				CF66C1564EDC46D687F18D8D /* Pods-Instagram.tests.xcconfig */,
+				F4584678C94364D8B60C6C4F /* Pods-InstagramTests.tests.xcconfig */,
+				F342A49BC34AC78D5AC683A5 /* Pods-InstagramUITests.tests.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -696,7 +702,7 @@
 		};
 		8859FC7F2199411300ACA405 /* Tests */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 21524244EC50F1972643DD3F /* Pods-Instagram.debug.xcconfig */;
+			baseConfigurationReference = CF66C1564EDC46D687F18D8D /* Pods-Instagram.tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -716,7 +722,7 @@
 		};
 		8859FC802199411300ACA405 /* Tests */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9F78A2D89F16312A2E50DA46 /* Pods-InstagramTests.debug.xcconfig */;
+			baseConfigurationReference = F4584678C94364D8B60C6C4F /* Pods-InstagramTests.tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -734,7 +740,7 @@
 		};
 		8859FC812199411300ACA405 /* Tests */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 76D8DA42CD99F6F4CD46D018 /* Pods-InstagramUITests.debug.xcconfig */;
+			baseConfigurationReference = F342A49BC34AC78D5AC683A5 /* Pods-InstagramUITests.tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

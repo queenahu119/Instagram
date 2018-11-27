@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Parse
 
 struct ProfilData {
     let id: String

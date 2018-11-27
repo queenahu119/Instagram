@@ -20,6 +20,7 @@ class MockDataAdapter {
         case getposts
         case getComments
         case getFollowing
+        case getAllUsers
     }
 
     func reset() {
@@ -101,6 +102,10 @@ extension MockDataAdapter: DataAdapterProtocol {
         }
     }
 
+    func logOut() {
+
+    }
+    
     // MARK: get user data
     func fetchAccountInfo(userId: String, completion: @escaping (ProfilData?, Error?) -> ()) {
 
@@ -183,5 +188,44 @@ extension MockDataAdapter: DataAdapterProtocol {
                 completion([], QNAError.getFollowings)
             }
         }
+    }
+
+    func fetchAllUser(completion: @escaping ([ProfilData], Error?)-> Void) {
+        if shouldReturnError {
+            completion([], MockServiceError.getAllUsers)
+        } else {
+            let api = "GetAllUsers"
+            if let fakeResponse = FakeResponses.sharedInstance.responseMatching(api) {
+                if let json = fakeResponse.json,
+                    let list = json[FakeResponsesJson.object.rawValue] as? [ProfilData] {
+
+                    completion(list, nil)
+                } else {
+                    completion([], fakeResponse.error)
+                }
+            } else {
+                completion([], QNAError.getAllUsers)
+            }
+        }
+    }
+
+    func addFollowing(id: String, completion: @escaping (Error?)-> Void) {
+        completion(nil)
+    }
+
+    func deleteFollowing(id: String, completion: @escaping (Error?)-> Void) {
+        completion(nil)
+    }
+
+    func addMedia(info: [String: AnyObject], completion: @escaping (Error?)-> Void) {
+        completion(nil)
+    }
+
+    func addComment(data: [String: String], completion: @escaping (Error?)-> Void) {
+        completion(nil)
+    }
+
+    func updateProfile(_ info: [Profile], _ profileImageData: Data?, completion: @escaping (Error?)-> Void) {
+        completion(nil)
     }
 }
