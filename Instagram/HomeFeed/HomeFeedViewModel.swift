@@ -126,7 +126,7 @@ struct FeedCellViewModel {
     let username: String
     let profileImageUrl: URL?
     let location: String?
-    let numOfLike: String?
+    let numOfLike: Int?
     let comments: String?
 
     let imageUrls: [URL?]

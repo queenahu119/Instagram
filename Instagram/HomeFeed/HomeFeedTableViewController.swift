@@ -102,13 +102,8 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         let cell = tableView.dequeueReusableCell(withIdentifier: feedCell, for: indexPath) as! FeedTableViewCell
 
         let cellViewModel: FeedCellViewModel = viewModel.getCellViewModel(at: indexPath)
+        cell.post = cellViewModel
 
-        let comment = cellViewModel.comments?.replacingOccurrences(of: "\n", with: "")
-
-        cell.username.text = cellViewModel.username
-        cell.textComments.text = comment
-
-//        print("text: [\(cell.textComments.text)]")
         viewModel.getProfileImageOfCell(at: indexPath as IndexPath) { (image, error) in
             DispatchQueue.main.async {
                 cell.profile.image = image
@@ -121,18 +116,11 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
             }
         }
 
-        cell.textNumOfLike.text = "3 likes"
-
-        let creationDate = cellViewModel.dateText
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm dd/MM yyyy"
-        cell.textPostTime.text = dateFormatter.string(from: creationDate!)
-
         cell.tag = indexPath.row
         cell.delegate = self
 
         cell.setNeedsUpdateConstraints()
-        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
 
         return cell
     }

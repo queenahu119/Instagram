@@ -11,16 +11,19 @@ import SnapKit
 
 class FeedTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var postHeaderView: UIView!
     @IBOutlet weak var username: UILabel!
     @IBOutlet weak var profile: UIImageView!
     @IBOutlet weak var imageFile: UIImageView!
-
     @IBOutlet weak var moreButton: UIButton!
+
+    @IBOutlet weak var postActionsView: UIView!
     @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var bookmarkButton: UIButton!
 
+    @IBOutlet weak var postStackView: UIStackView!
     @IBOutlet weak var textNumOfLike: UILabel!
     @IBOutlet weak var textComments: UITextView!
     @IBOutlet weak var viewCommentsButton: UIButton!
@@ -28,14 +31,55 @@ class FeedTableViewCell: UITableViewCell {
 
     weak var delegate: HomeFeedCellDelegate?
 
-//    var heightConstraint: Constraint? = nil
+    let padding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
+    var post: FeedCellViewModel? {
+        didSet {
+            username.text = post?.username
+
+            if let numOfLike = post?.numOfLike {
+                textNumOfLike.text = (numOfLike > 1) ? "\(numOfLike) likes" : "\(numOfLike) like"
+            }
+
+            // Adjust text's height
+            if let comment = post?.comments {
+                let text = comment.replacingOccurrences(of: "\n", with: "")
+                textComments.text = text
+            } else {
+                textComments.text = ""
+            }
+
+            if let creationDate = post?.dateText {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "HH:mm dd/MM yyyy"
+                textPostTime.text = dateFormatter.string(from: creationDate)
+            }
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.translatesAutoresizingMaskIntoConstraints = false
+
+        username.font = UIFont.boldSystemFont(ofSize: 13.5)
+        textComments.font = UIFont.systemFont(ofSize: 13.5)
+        textNumOfLike.font = UIFont.boldSystemFont(ofSize: 13.5)
+        textPostTime.font = UIFont.systemFont(ofSize: 13.5)
+
+        let textColorLight: UIColor = UIColor().colorWithHexString(hexString: "#D0CFC1")
+        textPostTime.textColor = textColorLight
+        viewCommentsButton.setTitleColor(textColorLight, for: .normal)
+        viewCommentsButton.titleLabel?.font = UIFont.systemFont(ofSize: 13.5)
+
 
         profile.layer.masksToBounds = false
-        profile.layer.cornerRadius = 25
+        profile.layer.cornerRadius = profile.frame.size.width / 2
         profile.clipsToBounds = true
+
+        postStackView.axis  = .vertical
+        postStackView.distribution  = UIStackViewDistribution.equalSpacing
+        postStackView.alignment = UIStackViewAlignment.top
+        postStackView.spacing   = 2.0
 
         textComments.isEditable = false
         textComments.isSelectable = false
@@ -43,20 +87,22 @@ class FeedTableViewCell: UITableViewCell {
         textComments.textContainer.maximumNumberOfLines = 0
         textComments.textContainer.lineBreakMode = .byTruncatingTail
         textComments.translatesAutoresizingMaskIntoConstraints = true
-        textComments.contentInset = UIEdgeInsets(top: -5, left: -5, bottom: -5, right: -5)
-
+        textComments.contentInset = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
+        textComments.textContainer.maximumNumberOfLines = 4;
+        textComments.textContainer.lineBreakMode = .byWordWrapping;
+        
         imageFile.contentMode = .scaleToFill
 
         textNumOfLike.sizeToFit()
         textPostTime.sizeToFit()
+        viewCommentsButton.sizeToFit()
 
-        setupUI()
+        setupLayout()
+        updatePostStackView()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
     @IBAction func likeTapped(_ sender: Any) {
@@ -69,103 +115,100 @@ class FeedTableViewCell: UITableViewCell {
 
     override func updateConstraints()
     {
-        setupUI()
-
+        updatePostStackView()
         super.updateConstraints()
     }
 
-    func setupUI() {
+    func setupLayout() {
+        postHeaderView.snp.makeConstraints { (make) in
+            make.top.equalTo(self.contentView)
+            make.left.right.equalToSuperview().inset(padding.left)
+            make.bottom.equalTo(imageFile.snp.top).priority(.medium)
+            make.height.equalTo(50)
+        }
 
-        let padding = UIEdgeInsets(top: 8, left: 8, bottom: -8, right: -8)
+        let height = UIScreen.main.bounds.width
+        imageFile.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview()
+            make.top.equalTo(postHeaderView.snp.bottom).priority(.medium)
+            make.bottom.equalTo(postActionsView.snp.top)
+            make.height.equalTo(height)
+        }
 
+        postActionsView.snp.makeConstraints { (make) in
+            make.top.equalTo(imageFile.snp.bottom)
+            make.left.right.equalToSuperview().inset(padding.left)
+            make.bottom.equalTo(postStackView.snp.top).priority(.medium)
+            make.height.equalTo(40)
+        }
 
+        postStackView.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview().inset(padding.left)
+            make.top.equalTo(postActionsView.snp.bottom).priority(.medium)
+            make.bottom.equalTo(self.contentView).offset(-padding.bottom)
+        }
+
+        // postHeaderView
         profile.snp.makeConstraints { (make) in
-            make.top.equalTo(self.contentView.snp.top).offset(padding.top)
-            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
-            make.size.equalTo(50)
+            make.centerY.equalTo(postHeaderView.snp.centerY)
+            make.left.equalTo(postHeaderView.snp.left)
+            make.size.equalTo(32)
         }
         username.snp.makeConstraints { (make) in
-            make.centerY.equalTo(profile.snp.centerY)
-            make.left.equalTo(profile.snp.right).offset(padding.left)
-            make.right.equalTo(moreButton.snp.left).offset(padding.right).priority(.medium)
+            make.centerY.equalTo(postHeaderView.snp.centerY)
+            make.left.equalTo(profile.snp.right).offset(5)
+            make.right.equalTo(moreButton.snp.left).offset(-5)
         }
         moreButton.snp.makeConstraints { (make) in
-            make.left.equalTo(username.snp.right).offset(padding.left).priority(.medium)
-            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
+            make.left.equalTo(username.snp.right).offset(5)
+            make.right.equalTo(postHeaderView.snp.right)
             make.centerY.equalTo(profile.snp.centerY)
-            make.size.equalTo(30)
+            make.size.equalTo(30).priority(.high)
         }
 
-        imageFile.snp.makeConstraints { (make) in
-            make.left.equalTo(self.contentView.snp.left)
-            make.top.equalTo(profile.snp.bottom).offset(8)
-            make.right.equalTo(self.contentView.snp.right)
-            make.height.equalTo(200)
-        }
+        // postActionsView
+        favoriteButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
+        commentButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
+        shareButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
+        bookmarkButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -10)
 
         favoriteButton.snp.makeConstraints { (make) in
-            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
+            make.left.equalTo(postActionsView.snp.left)
             make.right.equalTo(commentButton.snp.left)
-            make.top.equalTo(imageFile.snp.bottom).offset(padding.top)
-            make.size.equalTo(30)
+            make.centerY.equalTo(postActionsView.snp.centerY)
+            make.size.equalTo(32)
         }
         commentButton.snp.makeConstraints { (make) in
             make.left.equalTo(favoriteButton.snp.right)
             make.right.equalTo(shareButton.snp.left)
-            make.top.equalTo(favoriteButton.snp.top)
-            make.size.equalTo(30)
+            make.centerY.equalTo(postActionsView.snp.centerY)
+            make.size.equalTo(32)
         }
         shareButton.snp.makeConstraints { (make) in
             make.left.equalTo(commentButton.snp.right)
-            make.top.equalTo(favoriteButton.snp.top)
-            make.size.equalTo(30)
+            make.centerY.equalTo(postActionsView.snp.centerY)
+            make.size.equalTo(32)
         }
-
         bookmarkButton.snp.makeConstraints { (make) in
-            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
-            make.top.equalTo(favoriteButton.snp.top)
-            make.size.equalTo(30)
+            make.right.equalTo(postActionsView.snp.right)
+            make.centerY.equalTo(postActionsView.snp.centerY)
+            make.size.equalTo(32)
         }
+    }
 
-        textNumOfLike.snp.makeConstraints { (make) in
-            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
-            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
-            make.top.equalTo(favoriteButton.snp.bottom).offset(padding.top)
-            make.bottom.equalTo(textComments.snp.top)
+    func updatePostStackView() {
+
+        if textComments.text != "" {
+            textComments.isHidden = false
+            viewCommentsButton.isHidden = false
+
+            textNumOfLike.backgroundColor = UIColor.red
+            textComments.backgroundColor = UIColor.blue
+            viewCommentsButton.backgroundColor = UIColor.brown
+            textPostTime.backgroundColor = UIColor.red
+        } else {
+            textComments.isHidden = true
+            viewCommentsButton.isHidden = true
         }
-
-//        let fixedWidth = textComments.frame.size.width
-//        textComments.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-//        let newSize = textComments.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-//        var newFrame = textComments.frame
-//        newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
-//        textComments.frame = newFrame
-
-        let width = textComments.frame.width
-
-        let sizeThatFits = textComments.sizeThatFits(CGSize(width: width+10, height: CGFloat(MAXFLOAT)))
-
-
-//        print("sizeThatFits: ", sizeThatFits.height)
-        textComments.snp.makeConstraints { (make) in
-            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
-            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
-            make.top.equalTo(textNumOfLike.snp.bottom)
-            make.bottom.equalTo(viewCommentsButton.snp.top)
-            make.height.equalTo(sizeThatFits.height)
-        }
-        viewCommentsButton.snp.makeConstraints { (make) in
-            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
-            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
-            make.top.equalTo(textComments.snp.bottom)
-            make.bottom.equalTo(textPostTime.snp.top)
-        }
-        textPostTime.snp.makeConstraints { (make) in
-            make.left.equalTo(self.contentView.snp.left).offset(padding.left)
-            make.right.equalTo(self.contentView.snp.right).offset(padding.right)
-            make.top.equalTo(viewCommentsButton.snp.bottom)
-            make.bottom.equalTo(self.contentView.snp.bottom).offset(padding.bottom)
-        }
-
     }
 }

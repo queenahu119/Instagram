@@ -98,7 +98,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "USE_STUB_API"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

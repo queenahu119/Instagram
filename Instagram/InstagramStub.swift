@@ -105,7 +105,7 @@ struct InstagramStub {
     fileprivate static func configPosts(_ responses: FakeResponses) {
 
         let profileUrl = URL(string: "https://pngimage.net/wp-content/uploads/2018/06/profile-image-png-1.png")
-        let comment: Comment = Comment(postId: "a1111", userId: "1111", username: "Ida", profileImageUrl: profileUrl, replyUser: "John", text: "Apparently letting a kid be a kid is bad for their developmental health, according to the glut of questionable news articles on the subject", isLike: true)
+        let comment: Comment = Comment(postId: "a1111", userId: "1111", username: "Ida", profileImageUrl: profileUrl, replyUser: "John", text: "Apparently letting a kid be a kid is bad for their developmental health, according to the glut of questionable news articles on the subject Do you have loved ones interested in how science, tech, and culture intersect to shape the future? Then they’ll love the gift of a Medium subscription, with editor-curated collections and magazines that explore those topics—and more.", isLike: true)
         let comment1: Comment = Comment(postId: "a1111", userId: "2222", username: "apple", profileImageUrl: profileUrl, replyUser: "John", text: "Favourite part of Australia's semi-final victory?", isLike: false)
         let comment2: Comment = Comment(postId: "a1111", userId: "3333", username: "orage", profileImageUrl: profileUrl, replyUser: "Tom", text: "A fifth consecutive #WT20 final for Australia awaits as Alyssa Healy claims a fourth Player of the Match award in a huge win. ", isLike: false)
         let comment3: Comment = Comment(postId: "a1112", userId: "4444", username: "Mary01", profileImageUrl: profileUrl, replyUser: "Mary", text: "Australia vs Ireland -- Player of the match - ALYSSA HEALY", isLike: false)
@@ -126,14 +126,15 @@ struct InstagramStub {
         post.profileImageUrl = profileUrl
         post.createdTime = Date(timeIntervalSinceNow: -5000)
         post.comments = []
+        post.numOfLike = 1
         post.imageUrls = [URL(string: "http://cdn.newsapi.com.au/image/v1/789daefd20cd7a2dab6fc9f2526b5263?width=1024")]
 
-        let post2: Post = Post(id: "a1111", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "Sydney", numOfLike: "23", comments: [comment, comment1, comment2], imageUrls: [URL(string: "https://www.marieclaire.com.au/media/13713/051216-best-beach-australia.jpg")!], createdTime: Date(timeIntervalSinceNow: -3000))
-        let post3: Post = Post(id: "a1112", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: "12", comments: [comment3], imageUrls: [URL(string: "http://d3lp4xedbqa8a5.cloudfront.net/s3/digital-cougar-assets/AusGeo/2016/12/05/64305/Direction-Island-HR-(4-of-18).jpg")!], createdTime: Date(timeIntervalSinceNow: -2000))
-        let post4: Post = Post(id: "a1113", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: "12", comments: [comment4, comment5], imageUrls: [URL(string: "https://vacationidea.com/pix/img25Hy8R/tips/best-time-to-visit-sydney-australia_f.jpg")!], createdTime: Date(timeIntervalSinceNow: -1000))
-        let post5: Post = Post(id: "a1114", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: "12", comments: [comment6], imageUrls: [URL(string: "https://www.goway.com.au/media/cache/d7/98/d7987f155ad24875edf7cbbdbd1903a9.jpg")!], createdTime: Date(timeIntervalSinceNow: -500))
+        let post2: Post = Post(id: "a1111", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "Sydney", numOfLike: 2, comments: [], imageUrls: [URL(string: "https://www.marieclaire.com.au/media/13713/051216-best-beach-australia.jpg")!], createdTime: Date(timeIntervalSinceNow: -3000))
+        let post3: Post = Post(id: "a1112", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: 3, comments: [comment3], imageUrls: [URL(string: "http://d3lp4xedbqa8a5.cloudfront.net/s3/digital-cougar-assets/AusGeo/2016/12/05/64305/Direction-Island-HR-(4-of-18).jpg")!], createdTime: Date(timeIntervalSinceNow: -2000))
+        let post4: Post = Post(id: "a1113", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: 4, comments: [comment4, comment5], imageUrls: [URL(string: "https://vacationidea.com/pix/img25Hy8R/tips/best-time-to-visit-sydney-australia_f.jpg")!], createdTime: Date(timeIntervalSinceNow: -1000))
+        let post5: Post = Post(id: "a1114", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: 5, comments: [comment6], imageUrls: [URL(string: "https://www.goway.com.au/media/cache/d7/98/d7987f155ad24875edf7cbbdbd1903a9.jpg")!], createdTime: Date(timeIntervalSinceNow: -500))
 
-        let post6: Post = Post(id: "a1115", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: "12", comments: [], imageUrls: [URL(string: "https://1.bp.blogspot.com/-Y5jR4Uk1C88/Ttuq8_S_jgI/AAAAAAAAA_c/nGtPuXz9gIw/s1600/sea-sunset-wallpapers_11288_1920x1440.jpg")!], createdTime: Date(timeIntervalSinceNow: -400))
+        let post6: Post = Post(id: "a1115", userId: "1111", username: "Ida", profileImageUrl: profileUrl, location: "taipei", numOfLike: 6, comments: [comment, comment1, comment2], imageUrls: [URL(string: "https://1.bp.blogspot.com/-Y5jR4Uk1C88/Ttuq8_S_jgI/AAAAAAAAA_c/nGtPuXz9gIw/s1600/sea-sunset-wallpapers_11288_1920x1440.jpg")!], createdTime: Date(timeIntervalSinceNow: -400))
 
 
         responses.addResponse(

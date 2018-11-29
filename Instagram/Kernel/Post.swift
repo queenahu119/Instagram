@@ -55,7 +55,7 @@ struct Post {
     var username: String?
     var profileImageUrl: URL?
     var location: String?
-    var numOfLike: String?
+    var numOfLike: Int?
     var comments: [Comment?]
 
     var imageUrls: [URL?]
@@ -66,7 +66,7 @@ struct Post {
          username: String? = nil,
          profileImageUrl: URL? = nil,
          location: String? = nil,
-         numOfLike: String? = nil,
+         numOfLike: Int? = 0,
          comments: [Comment] = [],
          imageUrls: [URL] = [],
          createdTime: Date? = nil
