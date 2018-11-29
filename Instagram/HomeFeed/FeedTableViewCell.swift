@@ -201,11 +201,6 @@ class FeedTableViewCell: UITableViewCell {
         if textComments.text != "" {
             textComments.isHidden = false
             viewCommentsButton.isHidden = false
-
-            textNumOfLike.backgroundColor = UIColor.red
-            textComments.backgroundColor = UIColor.blue
-            viewCommentsButton.backgroundColor = UIColor.brown
-            textPostTime.backgroundColor = UIColor.red
         } else {
             textComments.isHidden = true
             viewCommentsButton.isHidden = true

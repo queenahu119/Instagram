@@ -73,12 +73,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         noteLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(view).offset(20)
             make.height.equalTo(40)
-            make.right.equalTo(switchLoninModeButton.snp.left)
-            make.bottom.equalTo(view).offset(-8)
+            make.right.equalTo(switchLoninModeButton.snp.left).offset(-5)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-8)
         }
 
         switchLoninModeButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(noteLabel.snp.right).offset(20)
+            make.left.equalTo(noteLabel.snp.right).offset(5)
             make.height.equalTo(40)
             make.width.equalTo(switchLoninModeButton.frame.size.width)
             make.bottom.equalTo(noteLabel.snp.bottom)
