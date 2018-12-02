@@ -7,6 +7,7 @@ Clone Instagram app with Parse Server
 * Practice MVVM in Swift
 * Use Parse Server on AWS
 * Auto layout programmatically
+* Using fake data to create a test environment
 * Implement some function of Instagram
 	- Login/Signup
 	- Follow/Unfollow user
@@ -32,7 +33,9 @@ $ open project-name.xcworkspace
 
 [Using Parse SDKs with Parse Server](http://docs.parseplatform.org/parse-server/guide/#using-parse-sdks-with-parse-server)
 
-Create new Constants.swift file
+1.Create the **Constants** folder
+
+2.Create new Constants.swift file
 
 ```
 struct PARSE_CLIENT {
@@ -41,6 +44,11 @@ struct PARSE_CLIENT {
     static let SERVER = "http://localhost:1337/parse"
 }
 ```
+
+### Using the fake data
+1.Change to **InstagramStub** target and Edit Scheme
+
+2.Select arguments variables **USE\_STUB\_API**
 
 
 ## Runtime Requirements
