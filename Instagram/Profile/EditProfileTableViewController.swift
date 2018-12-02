@@ -95,7 +95,7 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
             headerView = (tableView.dequeueReusableCell(withIdentifier: HeaderCellId) as? UserHeaderTableViewCell)
 
             // default image
-            headerView.profileImage.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
+            headerView.profileImage.image = defaultBackgroundColor.imageRepresentation
 
             viewModel.getProfileImage(completion: { (image, response, error) in
                 DispatchQueue.main.async {

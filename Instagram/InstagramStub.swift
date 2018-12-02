@@ -72,8 +72,9 @@ struct InstagramStub {
 
     static func configProfile(_ responses: FakeResponses) {
 
+        let bio = "Today kids all across the country are striking from school to protest the government’s inaction on #climatechange. They are fighting for their futures. 👏 🌏 💪 #climatestrike #climateaction @StrikeClimate"
         let profileUrl = URL(string: "https://pngimage.net/wp-content/uploads/2018/06/profile-image-png-1.png")!
-        var account = ProfilData(id: "1111", username: "Ida", fullname: "Ida Adams", email: "ida4@some.info", profilePicture: profileUrl, bio: "Here's who people are repping this Ausmusic T-Shirt Day ")
+        var account = ProfilData(id: "1111", username: "Ida", fullname: "Ida Adams", email: "ida4@some.info", profilePicture: profileUrl, bio: bio)
         account.followers = 102
         account.following = 23
         account.post = 15

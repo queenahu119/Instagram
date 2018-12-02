@@ -9,6 +9,11 @@
 import UIKit
 import SnapKit
 
+protocol HomeFeedCellDelegate : class {
+    func HomeFeedCellDelegateDidTapLike(_ sender: FeedTableViewCell)
+    func HomeFeedCellDelegateDidTapComment(_ sender: FeedTableViewCell)
+}
+
 class FeedTableViewCell: UITableViewCell {
 
     @IBOutlet weak var postHeaderView: UIView!
@@ -51,7 +56,7 @@ class FeedTableViewCell: UITableViewCell {
 
             if let creationDate = post?.dateText {
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "HH:mm dd/MM yyyy"
+                dateFormatter.dateFormat = "EEEE, MMMM dd, yyyy, HH:mm"
                 textPostTime.text = dateFormatter.string(from: creationDate)
             }
         }
@@ -66,12 +71,12 @@ class FeedTableViewCell: UITableViewCell {
         textNumOfLike.font = UIFont.boldSystemFont(ofSize: 13.5)
         textPostTime.font = UIFont.systemFont(ofSize: 13.5)
 
-        let textColorLight: UIColor = UIColor().colorWithHexString(hexString: "#D0CFC1")
+        let textColorLight: UIColor = UIColor.gray
         textPostTime.textColor = textColorLight
         viewCommentsButton.setTitleColor(textColorLight, for: .normal)
         viewCommentsButton.titleLabel?.font = UIFont.systemFont(ofSize: 13.5)
 
-
+        profile.image = defaultBackgroundColor.imageRepresentation
         profile.layer.masksToBounds = false
         profile.layer.cornerRadius = profile.frame.size.width / 2
         profile.clipsToBounds = true
@@ -87,10 +92,15 @@ class FeedTableViewCell: UITableViewCell {
         textComments.textContainer.maximumNumberOfLines = 0
         textComments.textContainer.lineBreakMode = .byTruncatingTail
         textComments.translatesAutoresizingMaskIntoConstraints = true
-        textComments.contentInset = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
+        textComments.contentInset = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: -5)
         textComments.textContainer.maximumNumberOfLines = 4;
-        textComments.textContainer.lineBreakMode = .byWordWrapping;
-        
+        textComments.textContainer.lineBreakMode = .byWordWrapping
+
+        textComments.autoresizingMask = .flexibleWidth
+        viewCommentsButton.autoresizingMask = .flexibleWidth
+        textPostTime.autoresizingMask = .flexibleWidth
+
+        imageFile.image = defaultBackgroundColor.imageRepresentation
         imageFile.contentMode = .scaleToFill
 
         textNumOfLike.sizeToFit()

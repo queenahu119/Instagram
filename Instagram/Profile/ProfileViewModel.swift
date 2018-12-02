@@ -17,7 +17,7 @@ class ProfileViewModel: NSObject {
         self.dataManager = dataManager
     }
 
-    private var profile : ProfilData = ProfilData(){
+    private var profile : ProfilData? = nil {
         didSet {
             self.reloadUserClosure?()
         }
@@ -48,7 +48,7 @@ class ProfileViewModel: NSObject {
 
     //MARK: -
 
-    func getUserInfoViewModel() -> ProfilData {
+    func getUserInfoViewModel() -> ProfilData? {
         return profile
     }
 
@@ -67,7 +67,8 @@ class ProfileViewModel: NSObject {
 
     func getProfileImage(url: URL?, completion:@escaping (UIImage?, URLResponse?, Error?)->()) -> () {
 
-        if let imageUrl = self.profile.profilePicture {
+        if let profile = self.profile,
+            let imageUrl = profile.profilePicture {
             dataManager.fetchImage(imageUrl: imageUrl, completion: { (image, error) in
                 completion(image, nil, error)
             })

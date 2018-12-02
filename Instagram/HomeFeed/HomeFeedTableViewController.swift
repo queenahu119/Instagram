@@ -9,10 +9,7 @@
 import UIKit
 
 
-protocol HomeFeedCellDelegate : class {
-    func HomeFeedCellDelegateDidTapLike(_ sender: FeedTableViewCell)
-    func HomeFeedCellDelegateDidTapComment(_ sender: FeedTableViewCell)
-}
+
 
 class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, HomeFeedCellDelegate {
 

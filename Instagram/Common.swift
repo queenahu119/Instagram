@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+let defaultBackgroundColor = UIColor().colorWithHexString(hexString: "#D8DFE5")
+
 class Helper {
 
     static func displayAlert(vc: UIViewController, title: String, message: String, completion:(()->())?) {

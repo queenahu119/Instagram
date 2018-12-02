@@ -29,19 +29,20 @@ class UserHeaderTableViewCell: UITableViewCell {
 
     let separatorLineView: UIView = {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor(white: 0, alpha: 0.5)
         lineView.isHidden = true
         return lineView
     }()
 
     func setupViews() {
 
+        // default image
+        profileImage.image = defaultBackgroundColor.imageRepresentation
         profileImage.layer.masksToBounds = false
         profileImage.layer.cornerRadius = profileImage.frame.height/2
         profileImage.clipsToBounds = true
 
         separatorLineView.isHidden = false;
-        separatorLineView.backgroundColor = UIColor(red: 230, green: 230, blue: 230, alpha: 1)
+        separatorLineView.backgroundColor = UIColor().colorWithHexString(hexString: "#E6E6E6")
 
         clipsToBounds = true
         addSubview(separatorLineView)

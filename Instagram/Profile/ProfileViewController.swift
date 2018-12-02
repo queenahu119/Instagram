@@ -9,7 +9,12 @@
 import UIKit
 import SnapKit
 
-class ProfileViewController: UIViewController {
+fileprivate struct CollectionSize {
+    static var numberOfColumns: Int = 3
+    static var cellPadding: CGFloat = 6
+}
+
+class ProfileViewController: UIViewController, ProfileStateViewDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -23,84 +28,24 @@ class ProfileViewController: UIViewController {
 
     var imageCache = NSCache<NSString, UIImage>()
 
-    var textFullname: UILabel = {
-        let txt = UILabel()
-        return txt
+    var profileStateView: ProfileStateView = {
+        let view = ProfileStateView()
+        return view
     }()
 
-    var profileImageView: UIImageView = {
-        var imageView = UIImageView()
-        return imageView
+    var infoViewHeightConstraint: Constraint?
+    var profileInfoView: ProfileInfoView = {
+        let view = ProfileInfoView()
+        return view
     }()
 
-    var editProfileButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Edit Profile", for: .normal)
-        button.setTitleColor(UIColor(red: 29/255, green: 29/255, blue: 29/255, alpha: 1), for: .normal)
-
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(red: 211/255, green: 213/255, blue: 215/255, alpha: 1).cgColor
-        button.layer.cornerRadius = 5
-        button.layer.masksToBounds = false
-        button.clipsToBounds = true
-        return button
-    }()
-
-    let numOfPosts: UILabel = {
-        let txt = UILabel()
-        txt.text = "22"
-        txt.textAlignment = .center
-        txt.sizeToFit()
-        return txt
-    }()
-    let numOfFollowers: UILabel = {
-        let txt = UILabel()
-        txt.text = "169"
-        txt.textAlignment = .center
-        txt.sizeToFit()
-        return txt
-    }()
-    let numOfFollowings: UILabel = {
-        let txt = UILabel()
-        txt.text = "34"
-        txt.textAlignment = .center
-        txt.sizeToFit()
-        return txt
-    }()
-    let textPosts: UILabel = {
-        let txt = UILabel()
-        txt.text = "posts"
-        txt.textAlignment = .center
-        txt.sizeToFit()
-        txt.textColor = UIColor.gray
-        return txt
-    }()
-    let textFollowers: UILabel = {
-        let txt = UILabel()
-        txt.text = "followers"
-        txt.textAlignment = .center
-        txt.sizeToFit()
-        txt.textColor = UIColor.gray
-        return txt
-    }()
-    let textFollowings: UILabel = {
-        let txt = UILabel()
-        txt.text = "followings"
-        txt.textAlignment = .center
-        txt.sizeToFit()
-        txt.textColor = UIColor.gray
-        return txt
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setUpNavBar()
+        setupView()
 
-        setUpUI()
-
-        editProfileButton.addTarget(self, action: #selector(onEditProfile), for: .touchUpInside)
-        
         viewModel.reloadUserClosure = { [weak self] () in
             DispatchQueue.main.async {
                 self?.updateUserData()
@@ -132,7 +77,6 @@ class ProfileViewController: UIViewController {
         }
 
         viewModel.initFetchUserInfo()
-
     }
 
     func setUpNavBar() {
@@ -155,111 +99,58 @@ class ProfileViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = leftButton
     }
 
-    func setUpUI() {
+    func setupView() {
 
-        view.addSubview(editProfileButton)
-        view.addSubview(profileImageView)
-        view.addSubview(textFullname)
-        view.addSubview(numOfPosts)
-        view.addSubview(numOfFollowers)
-        view.addSubview(numOfFollowings)
-        view.addSubview(textPosts)
-        view.addSubview(textFollowers)
-        view.addSubview(textFollowings)
+        let screenWidth = UIScreen.main.bounds.width
+        let StateViewHeight = UIScreen.main.bounds.width*0.35
+        profileStateView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: StateViewHeight)
+        profileStateView.delegate = self
+        view.addSubview(profileStateView)
 
+        profileInfoView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: 100)
+        view.addSubview(profileInfoView)
+
+
+        profileStateView.snp.makeConstraints { (make) in
+            make.left.right.top.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(StateViewHeight)
+        }
+
+        profileInfoView.snp.makeConstraints { (make) in
+            make.left.right.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(profileStateView.snp.bottom)
+            infoViewHeightConstraint = make.height.equalTo(profileInfoView.frame.height).constraint
+        }
+
+        collectionView.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(profileInfoView.snp.bottom)
+        }
         activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
             UIActivityIndicatorViewStyle.gray)
         activityIndicator.center = self.view.center
         self.view.addSubview(activityIndicator);
+    }
 
-        let screenWidth: CGFloat = UIScreen.main.bounds.width
-        let profileImageWidth: CGFloat = 70 //screenWidth*0.25
-
-        // default image
-        profileImageView.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
-        profileImageView.layer.cornerRadius = profileImageWidth/2
-        profileImageView.layer.masksToBounds = false
-        profileImageView.clipsToBounds = true
-
-        let padding = UIEdgeInsetsMake(5, 5, -5, -5)
-
-
-        profileImageView.snp.makeConstraints { make in
-            make.left.equalTo(view.snp.left).offset(15)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
-            make.height.equalTo(profileImageWidth)
-            make.width.equalTo(profileImageWidth)
-        }
-
-        textFullname.snp.makeConstraints { make in
-            make.left.equalTo(profileImageView.snp.left)
-            make.top.equalTo(profileImageView.snp.bottom).offset(padding.top)
-            make.height.equalTo(22)
-            make.width.equalTo(100)
-        }
-
-        editProfileButton.snp.makeConstraints { (make) in
-            make.left.equalTo(profileImageView.snp.right).offset(10)
-            make.right.equalTo(view.safeAreaLayoutGuide.snp.right).offset(-15)
-            make.bottom.equalTo(profileImageView.snp.lastBaseline)
-            make.height.equalTo(25)
-        }
-
-        numOfPosts.snp.makeConstraints { (make) in
-            make.left.equalTo(textPosts.snp.left)
-            make.right.equalTo(textPosts.snp.right)
-            make.top.equalTo(profileImageView.snp.top).offset(padding.top)
-            make.bottom.equalTo(textPosts.snp.top)
-        }
-        numOfFollowers.snp.makeConstraints { (make) in
-            make.left.equalTo(textFollowers.snp.left)
-            make.right.equalTo(textFollowers.snp.right)
-            make.top.equalTo(numOfPosts.snp.top)
-            make.bottom.equalTo(numOfPosts.snp.bottom)
-        }
-        numOfFollowings.snp.makeConstraints { (make) in
-            make.left.equalTo(textFollowings.snp.left)
-            make.right.equalTo(textFollowings.snp.right)
-            make.top.equalTo(numOfPosts.snp.top)
-            make.bottom.equalTo(numOfPosts.snp.bottom)
-        }
-
-        textPosts.snp.makeConstraints { (make) in
-            make.left.equalTo(editProfileButton.snp.left)
-            make.right.equalTo(textFollowers.snp.left).offset(padding.right)
-            make.top.equalTo(numOfPosts.snp.bottom)
-            make.bottom.equalTo(editProfileButton.snp.top).offset(padding.bottom)
-        }
-        textFollowers.snp.makeConstraints { (make) in
-            make.left.equalTo(textPosts.snp.right).offset(padding.left)
-            make.right.equalTo(textFollowings.snp.left).offset(padding.right)
-            make.top.equalTo(textPosts.snp.top)
-            make.bottom.equalTo(textPosts.snp.bottom)
-        }
-        textFollowings.snp.makeConstraints { (make) in
-            make.left.equalTo(textFollowers.snp.right).offset(padding.left)
-            make.right.equalTo(editProfileButton.snp.right)
-            make.top.equalTo(textPosts.snp.top)
-            make.bottom.equalTo(textPosts.snp.bottom)
-        }
-
+    func adjustViewHeight(_ view: ProfileInfoView) {
+        let height = view.height
+        self.infoViewHeightConstraint?.update(offset: height)
+        self.view.layoutIfNeeded()
     }
 
     @objc func updateUserData() {
+        if let user = viewModel.getUserInfoViewModel() {
+            profileStateView.profile = user
+            profileInfoView.profile = user
 
-        let user = viewModel.getUserInfoViewModel()
-
-        self.textFullname.text = user.fullname
-        self.numOfPosts.text = String(user.post)
-        self.numOfFollowers.text = String(user.followers)
-        self.numOfFollowings.text = String(user.following)
-        self.usernameLabel.text = String(user.username)
+            adjustViewHeight(profileInfoView)
+        }
 
         viewModel.getProfileImage(url: nil) { (image, response, error) in
             guard let image = image, error == nil else { return }
 
             DispatchQueue.main.async {
-                self.profileImageView.image = image
+                self.profileStateView.profileImageView.image = image
             }
         }
     }
@@ -274,11 +165,12 @@ class ProfileViewController: UIViewController {
         self.performSegue(withIdentifier: "DiscoverPeopleView", sender: self)
     }
 
-    @objc func onEditProfile() {
-        self.performSegue(withIdentifier: "EditProfileView", sender: self)
-    }
 
     @IBAction func unwindToProfile(segue: UIStoryboardSegue) {}
+
+    func profileStateViewDelegateDidTapEdit(_ sender: ProfileStateView) {
+        self.performSegue(withIdentifier: "EditProfileView", sender: self)
+    }
 }
 
 extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
@@ -287,7 +179,7 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     //MARK: UICollectionViewDataSource
 
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1     //return number of sections in collection view
+        return 1
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -328,11 +220,6 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsetsMake(5,5,5,5)
-    }
-
-    fileprivate struct CollectionSize {
-        static var numberOfColumns: Int = 3
-        static var cellPadding: CGFloat = 6
     }
 
     func collectionViewContentSize() -> CGSize {
