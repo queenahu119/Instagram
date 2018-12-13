@@ -67,6 +67,8 @@ class ProfileStateView: CustomView {
         self.addSubview(profileImageView)
         self.addSubview(editProfileButton)
 
+        profileImageView.image = defaultBackgroundColor.imageRepresentation
+
         profileImageView.layer.cornerRadius = profileImageSize/2
 
         postView.textLabel.text = "posts"

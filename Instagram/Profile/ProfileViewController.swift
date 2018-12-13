@@ -166,7 +166,9 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
     }
 
 
-    @IBAction func unwindToProfile(segue: UIStoryboardSegue) {}
+    @IBAction func unwindToProfile(segue: UIStoryboardSegue) {
+        viewModel.fetchProfileData()
+    }
 
     func profileStateViewDelegateDidTapEdit(_ sender: ProfileStateView) {
         self.performSegue(withIdentifier: "EditProfileView", sender: self)
@@ -198,7 +200,7 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
         cell.imageView.contentMode = .scaleAspectFill
 
         // default image
-        cell.imageView.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
+        cell.imageView.image = defaultBackgroundColor.imageRepresentation
 
         viewModel.getImageOfCell(at: itemAtIndexPath as IndexPath) { (image, response, error) in
             DispatchQueue.main.async {

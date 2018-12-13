@@ -144,12 +144,10 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
         let optionMenu = UIAlertController(title: nil, message: "Change Profile Photo", preferredStyle: .actionSheet)
 
         let cameraAction = UIAlertAction(title: "Take Photo", style: .default) { (alert) in
-            print("take photo")
             self.camera()
         }
 
         let libraryAction = UIAlertAction(title: "Choose From Library", style: .default) { (alert) in
-            print("from library")
             self.photoLibrary()
         }
 
@@ -222,9 +220,39 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
 class ProfileCell: UITableViewCell {
 
     @IBOutlet weak var labelField: UILabel!
-    
     @IBOutlet weak var inputText: UITextField!
-    
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        self.selectionStyle = .none
+        
+        setupLayout()
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+    }
+
+    func setupLayout() {
+        let padding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+
+        labelField.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().inset(padding.left)
+            make.centerY.equalTo(self.snp.centerY)
+            make.width.equalTo(100)
+            make.height.equalTo(25)
+            make.right.equalTo(inputText.snp.left).offset(-padding.right)
+        }
+
+        inputText.snp.makeConstraints { (make) in
+            make.left.equalTo(labelField.snp.right).offset(padding.left)
+            make.centerY.equalTo(self.snp.centerY)
+            make.height.equalTo(25)
+            make.right.equalToSuperview().inset(padding.right)
+        }
+    }
 }
 
 
