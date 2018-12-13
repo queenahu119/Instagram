@@ -34,7 +34,10 @@ public class ParseDataAdapter {
     func setCurrentUser(_ user: PFUser) {
         CurrentAccount.shared().baseUserId = (user.objectId)!
         CurrentAccount.shared().baseUsername = (user.username)!
-        CurrentAccount.shared().baseProfilePicture = user["profile_picture"] as? URL
+
+        if let profileImageFile = user["profile_picture"] as? PFFileObject, let urlString = profileImageFile.url {
+            CurrentAccount.shared().baseProfilePicture = URL(string: urlString)
+        }
     }
 
     func isUserLogin() -> Bool {
@@ -59,9 +62,14 @@ extension ParseDataAdapter: DataAdapterProtocol {
             if success {
                 self.setCurrentUser(user)
 
+                var profileImageUrl: URL? = nil
+                if let profileImageFile = user["profile_picture"] as? PFFileObject, let urlString = profileImageFile.url {
+                    profileImageUrl = URL(string: urlString)
+                }
+
                 // to do
                 var accountData = ProfilData()
-                accountData = ProfilData(id: user.objectId ?? "xxxx", username: user.username ?? "default user", fullname: "", email: user.email ?? "email", profilePicture: user["profile_picture"] as? URL, bio: "")
+                accountData = ProfilData(id: user.objectId ?? "xxxx", username: user.username ?? "default user", fullname: "", email: user.email ?? "email", profilePicture: profileImageUrl, bio: "")
 
                 completion(accountData, error)
             } else {
@@ -77,9 +85,14 @@ extension ParseDataAdapter: DataAdapterProtocol {
             if let user = user {
                 self.setCurrentUser(user)
 
+                var profileImageUrl: URL? = nil
+                if let profileImageFile = user["profile_picture"] as? PFFileObject, let urlString = profileImageFile.url {
+                    profileImageUrl = URL(string: urlString)
+                }
+
                 // to do
                 var accountData = ProfilData()
-                accountData = ProfilData(id: user.objectId ?? "xxxx", username: user.username ?? "default user", fullname: "", email: user.email ?? "email", profilePicture: user["profile_picture"] as? URL, bio: "")
+                accountData = ProfilData(id: user.objectId ?? "xxxx", username: user.username ?? "default user", fullname: "", email: user.email ?? "email", profilePicture: profileImageUrl, bio: "")
 
                 completion(accountData, nil)
             } else {
@@ -155,9 +168,15 @@ extension ParseDataAdapter: DataAdapterProtocol {
                                 data.userId = (post["user"] as? PFUser)?.objectId
 
                                 data.username = userData.username
-                                data.profileImageUrl = userData["profile_picture"] as? URL
                                 data.createdTime = post.createdAt
-                                data.imageUrls = [post["imageFile"] as? URL]
+
+                                if let profileImageFile = userData["profile_picture"] as? PFFileObject, let urlString = profileImageFile.url {
+                                    data.profileImageUrl = URL(string: urlString)
+                                }
+
+                                if let imageFile = post["imageFile"] as? PFFileObject, let urlString = imageFile.url {
+                                    data.imageUrls = [URL(string: urlString)]
+                                }
 
                                 let group = DispatchGroup()
                                 group.enter()
@@ -205,13 +224,13 @@ extension ParseDataAdapter: DataAdapterProtocol {
                         completion(false, [], error)
 
                     } else if let posts = objects {
-
                         var list = [URL]()
 
                         for post in posts {
-
-                            if let imageFile = post["imageFile"] as? URL {
-                                list.append(imageFile)
+                            if let imageFile = userData["imageFile"] as? PFFileObject,
+                                let urlString = imageFile.url,
+                                let url = URL(string: urlString) {
+                                list.append(url)
                             }
                         }
 
@@ -332,7 +351,12 @@ extension ParseDataAdapter: DataAdapterProtocol {
                             let email = String(describing: user.email ?? "")
                             let bio = String(describing: user["bio"] ?? "")
 
-                            let accountData = ProfilData(id: id, username: username, fullname: fullName, email: email, profilePicture: user["profile_picture"] as? URL, bio: bio)
+                            var profileImageUrl: URL? = nil
+                            if let profileImageFile = user["profile_picture"] as? PFFileObject, let urlString = profileImageFile.url {
+                                profileImageUrl = URL(string: urlString)
+                            }
+
+                            let accountData = ProfilData(id: id, username: username, fullname: fullName, email: email, profilePicture: profileImageUrl, bio: bio)
 
                             list.append(accountData)
                         }

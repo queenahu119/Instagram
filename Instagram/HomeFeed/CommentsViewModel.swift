@@ -53,8 +53,7 @@ class CommentsViewModel: NSObject {
                 self?.updateProfileImageAfterCompletion!(image, nil, nil)
             }
         } else {
-            let defaultImage = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
-
+            let defaultImage = defaultBackgroundColor.imageRepresentation
             self.updateProfileImageAfterCompletion!(defaultImage, nil, nil)
         }
     }
@@ -77,9 +76,10 @@ class CommentsViewModel: NSObject {
 
         var list = [CommentCellViewModel]()
 
-        dataManager.fetchComments(postId: postId) { (objects, error) in
-            if error == nil {
+        dataManager.fetchComments(postId: postId) { [weak self] (objects, error) in
+            self?.isLoading = false
 
+            if error == nil {
                 for comment in objects {
 
                     if let comment = comment {
@@ -91,8 +91,7 @@ class CommentsViewModel: NSObject {
                         list.append(data)
                     }
                 }
-                self.cellViewModel = list
-                self.isLoading = false
+                self?.cellViewModel = list
             }
         }
 

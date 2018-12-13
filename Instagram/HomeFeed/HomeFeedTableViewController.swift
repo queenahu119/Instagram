@@ -8,9 +8,6 @@
 
 import UIKit
 
-
-
-
 class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, HomeFeedCellDelegate {
 
     let feedCell = "feedCell"

@@ -64,7 +64,7 @@ class DiscoverPeopleTableViewController: UITableViewController, PeopleCellDelega
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 80
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -76,7 +76,7 @@ class DiscoverPeopleTableViewController: UITableViewController, PeopleCellDelega
         cell.fullnameLabel.text = cellViewModel.fullnameText
 
 
-        cell.profileImageView.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
+        cell.profileImageView.image = defaultBackgroundColor.imageRepresentation
 
         viewModel.getImageOfCell(at: indexPath as IndexPath) { (image, response, error) in
             DispatchQueue.main.async {
@@ -140,6 +140,8 @@ class PeopleCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
+        self.selectionStyle = .none
+        
         usernameLabel.textColor = UIColor(red: 29/255, green: 29/255, blue: 29/255, alpha: 1)
         fullnameLabel.textColor = UIColor(red: 135/255, green: 135/255, blue: 135/255, alpha: 1)
 
@@ -151,6 +153,9 @@ class PeopleCell: UITableViewCell {
         followButton.layer.cornerRadius = 5
         followButton.layer.masksToBounds = true
         followButton.tintColor = UIColor.white
+        followButton.sizeToFit()
+
+        setupLayout()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -164,4 +169,38 @@ class PeopleCell: UITableViewCell {
     }
 
 
+    func setupLayout() {
+        let padding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+
+        profileImageView.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().inset(padding.left)
+            make.centerY.equalTo(self.snp.centerY)
+            make.size.equalTo(profileImageView.frame.height)
+        }
+
+        usernameLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(profileImageView.snp.right).offset(padding.left)
+            make.top.equalTo(self.snp.top).offset(padding.top)
+            make.bottom.equalTo(fullnameLabel.snp.top).offset(-5)
+            make.right.equalTo(followButton.snp.left).offset(-padding.right)
+        }
+
+        fullnameLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(usernameLabel.snp.left)
+            make.right.equalTo(usernameLabel.snp.right)
+            make.top.equalTo(usernameLabel.snp.bottom).offset(5)
+            make.bottom.equalTo(self.snp.bottom).offset(-padding.bottom)
+        }
+
+        followButton.snp.makeConstraints { (make) in
+            make.right.equalToSuperview().inset(padding.right)
+            make.centerY.equalTo(self.snp.centerY)
+            make.height.equalTo(30)
+            make.width.equalTo(70)
+        }
+
+        followIndicator.snp.makeConstraints { (make) in
+            make.edges.equalTo(followButton)
+        }
+    }
 }

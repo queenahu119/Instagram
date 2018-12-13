@@ -64,6 +64,7 @@ class FeedTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.selectionStyle = .none
         self.translatesAutoresizingMaskIntoConstraints = false
 
         username.font = UIFont.boldSystemFont(ofSize: 13.5)
@@ -120,6 +121,10 @@ class FeedTableViewCell: UITableViewCell {
     }
     
     @IBAction func commentTapped(_ sender: Any) {
+        delegate?.HomeFeedCellDelegateDidTapComment(self)
+    }
+
+    @IBAction func viewCommentButtonTapped(_ sender: Any) {
         delegate?.HomeFeedCellDelegateDidTapComment(self)
     }
 
@@ -184,18 +189,18 @@ class FeedTableViewCell: UITableViewCell {
 
         favoriteButton.snp.makeConstraints { (make) in
             make.left.equalTo(postActionsView.snp.left)
-            make.right.equalTo(commentButton.snp.left)
+            make.right.equalTo(commentButton.snp.left).offset(-padding.right)
             make.centerY.equalTo(postActionsView.snp.centerY)
             make.size.equalTo(32)
         }
         commentButton.snp.makeConstraints { (make) in
-            make.left.equalTo(favoriteButton.snp.right)
-            make.right.equalTo(shareButton.snp.left)
+            make.left.equalTo(favoriteButton.snp.right).offset(padding.left)
+            make.right.equalTo(shareButton.snp.left).offset(-padding.right)
             make.centerY.equalTo(postActionsView.snp.centerY)
             make.size.equalTo(32)
         }
         shareButton.snp.makeConstraints { (make) in
-            make.left.equalTo(commentButton.snp.right)
+            make.left.equalTo(commentButton.snp.right).offset(padding.left)
             make.centerY.equalTo(postActionsView.snp.centerY)
             make.size.equalTo(32)
         }

@@ -33,7 +33,11 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 
         cell.textView.text = cellViewModel.text
 
-        cell.profileImage.image = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
+        viewModel.updateProfileImageAfterCompletion = { (image, response, error) in
+            DispatchQueue.main.async {
+                cell.profileImage.image = image
+            }
+        }
 
         viewModel.getImageOfCell(at: indexPath) { (image, error) in
             if error == nil {
@@ -45,6 +49,4 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 
         return cell
     }
-
-
 }

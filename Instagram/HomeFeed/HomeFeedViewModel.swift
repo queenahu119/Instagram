@@ -61,7 +61,7 @@ class HomeFeedViewModel: NSObject {
                 completion(image, error)
             }
         } else {
-            let defaultImage = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
+            let defaultImage = defaultBackgroundColor.imageRepresentation
 
             completion(defaultImage, nil)
         }
@@ -75,8 +75,7 @@ class HomeFeedViewModel: NSObject {
                 completion(image, error)
             }
         } else {
-            let defaultImage = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1).imageRepresentation
-
+            let defaultImage = defaultBackgroundColor.imageRepresentation
             completion(defaultImage, nil)
         }
     }
@@ -89,6 +88,8 @@ class HomeFeedViewModel: NSObject {
         }
 
         dataManager.fetchMedias(userId: userID) { (posts) in
+            self.isLoading = false
+            
             guard let posts = posts else {
                 print("No any post.")
                 return
@@ -110,7 +111,7 @@ class HomeFeedViewModel: NSObject {
             listByUser.sort(by: {Double(($0.dateText?.timeIntervalSinceNow)!) > Double(($1.dateText?.timeIntervalSinceNow)!)})
 
             self.cellViewModel = listByUser
-            self.isLoading = false
+
         }
     }
 

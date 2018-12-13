@@ -13,6 +13,10 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
 
     @IBOutlet weak var imageViewToPost: UIImageView!
     @IBOutlet weak var comment: UITextView!
+    @IBOutlet weak var chooseFromLibraryButton: UIButton!
+    @IBOutlet weak var takePhotoButton: UIButton!
+
+    private let defaultImage = UIImage(named: "museum.jpg")
 
     lazy fileprivate var viewModel: PostViewModel = {
         return PostViewModel()
@@ -33,7 +37,16 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         comment.text = "Write down your caption..."
         comment.textColor = UIColor.lightGray
 
+        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+
+        // Move view up when keyboard appears
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: Notification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: Notification.Name.UIKeyboardWillHide, object: nil)
+        
         setUpLoading()
+        setupLayout()
 
         viewModel.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
@@ -43,7 +56,6 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
 
                 }else {
                     self?.activityIndicator.stopAnimating()
-
                 }
             }
         }
@@ -51,18 +63,24 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         viewModel.postAfterCompletion = { (success, title, message) in
             DispatchQueue.main.async {
 
-                Helper.displayAlert(vc: self, title: title!, message: message!, completion: {
+                Helper.displayAlert(vc: self, title: title!, message: message!, completion: { [weak self] in
                     if success {
-                        self.comment.text = ""
-                        self.imageViewToPost.image = nil
+                        self?.comment.text = ""
+                        self?.imageViewToPost.image = self?.defaultImage
 
-                        self.tabBarController?.selectedIndex = 0
+                        self?.tabBarController?.selectedIndex = 0
                     }
                 })
             }
         }
 
-        self.imageViewToPost.image = UIImage(named: "museum.jpg")
+        self.imageViewToPost.image = defaultImage
+        self.imageViewToPost.contentMode = .scaleAspectFit
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
     }
 
     @IBAction func useLibraryPhotoButton(_ sender: Any) {
@@ -122,6 +140,21 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         }
     }
 
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if comment.text.isEmpty {
+            comment.text = "Write down your caption..."
+            comment.textColor = UIColor.lightGray
+        }
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if(text == "\n") {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
+
     func setUpLoading() {
 
         activityIndicator.center = self.view.center
@@ -130,4 +163,47 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         view.addSubview(activityIndicator)
     }
 
+    func setupLayout() {
+        let padding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+
+        chooseFromLibraryButton.sizeToFit()
+        takePhotoButton.sizeToFit()
+
+        let height = UIScreen.main.bounds.width
+        imageViewToPost.snp.makeConstraints { (make) in
+            make.left.right.top.equalToSuperview()
+            make.height.equalTo(height)
+        }
+
+        comment.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview().inset(padding.left)
+            make.top.equalTo(imageViewToPost.snp.bottom).offset(padding.top)
+            make.height.equalTo(100).priority(.low)
+            make.bottom.equalTo(chooseFromLibraryButton.snp.top).offset(-padding.bottom)
+        }
+
+        chooseFromLibraryButton.snp.makeConstraints { (make) in
+            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(padding.left)
+            make.height.equalTo(chooseFromLibraryButton.frame.size.height)
+        }
+
+        takePhotoButton.snp.makeConstraints { (make) in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(padding.right)
+            make.height.equalTo(takePhotoButton.frame.size.height)
+        }
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0 {
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
+    }
 }

@@ -43,6 +43,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         signupOrLoninButton.layer.masksToBounds = true
         signupOrLoninButton.tintColor = UIColor.white
 
+        username.delegate = self
+        password.delegate = self
+        
         appName.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(view)
             make.height.equalTo(45)
@@ -152,12 +155,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
-        if textField == password {
-            textField.resignFirstResponder()
-        }
+        textField.resignFirstResponder()
         return true
     }
 
