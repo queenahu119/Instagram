@@ -34,14 +34,20 @@ class PostViewModel: NSObject {
     func postMedia(info: [String: AnyObject]) {
         self.isLoading = true
 
-        dataManager.addMedia(info: info) { [weak self] (error) in
-            self?.isLoading = false
-            if error == nil {
-                self?.postAfterCompletion!(true, "Image Posted!", "Your image have been posted sucessfully.")
-            } else {
-                self?.postAfterCompletion!(false, "Image Could Not Be Posted!", "Please try again later.")
+        DispatchQueue.global().async { [weak self] in
+            self?.dataManager.addMedia(info: info) { [weak self] (error) in
+
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                    if error == nil {
+                        self?.postAfterCompletion!(true, "Image Posted!", "Your image have been posted sucessfully.")
+                    } else {
+                        self?.postAfterCompletion!(false, "Image Could Not Be Posted!", "Please try again later.")
+                    }
+                }
             }
         }
+
     }
 }
 

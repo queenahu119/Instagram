@@ -439,11 +439,11 @@ extension ParseDataAdapter: DataAdapterProtocol {
             return
         }
 
-        let comment = info["comment"]?.text ?? ""
+        let comment: String = info["comment"] as! String
         let post = PFObject(className:"Photos")
         post["user"] = currentUser
 
-        if let image = info["image"]?.image, let imageData = image.toJPEGNSData(.lowest) {
+        if let image = info["image"] as? UIImage, let imageData = image.toJPEGNSData(.lowest) {
             let imageFile = PFFileObject(name: "image.png", data: imageData)
             post["imageFile"] = imageFile
 

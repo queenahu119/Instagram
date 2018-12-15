@@ -87,11 +87,17 @@ class ProfileViewModel: NSObject {
             return
         }
 
-        dataManager.fetchUserData(userId: userId) { [weak self] (profilData, error) in
-            if let profilData = profilData {
-                self?.profile = profilData
+        DispatchQueue.global().async { [weak self] in
+            self?.dataManager.fetchUserData(userId: userId) { [weak self] (profilData, error) in
+
+                DispatchQueue.main.async {
+                    if let profilData = profilData {
+                        self?.profile = profilData
+                    }
+                }
             }
         }
+
     }
 
     func fetchOwnMedias() {

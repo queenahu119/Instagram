@@ -117,6 +117,11 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
         return 160
     }
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
+    }
+
+    // MARK: - UI
     func setUpNavBar() {
         let doneButton = UIBarButtonItem(title: "Done",
                                           style: .plain,
@@ -131,35 +136,13 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
         self.navigationItem.leftBarButtonItem = cancelButton
     }
 
-    @objc func onDone() {
-        viewModel.submitProfile(info: infoList, profileImage: headerView?.profileImage.image)
+    func setUpLoading() {
+
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        view.addSubview(activityIndicator)
     }
-
-    @objc func onCancel() {
-        
-        self.performSegue(withIdentifier: "unwindToProfile", sender: self)
-    }
-
-    @objc func onChangeProfilePhoto(){
-        let optionMenu = UIAlertController(title: nil, message: "Change Profile Photo", preferredStyle: .actionSheet)
-
-        let cameraAction = UIAlertAction(title: "Take Photo", style: .default) { (alert) in
-            self.camera()
-        }
-
-        let libraryAction = UIAlertAction(title: "Choose From Library", style: .default) { (alert) in
-            self.photoLibrary()
-        }
-
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-
-        optionMenu.addAction(cameraAction)
-        optionMenu.addAction(libraryAction)
-        optionMenu.addAction(cancelAction)
-
-        self.present(optionMenu, animated: true, completion: nil)
-    }
-
 
     //MARK: - UITextFieldDelegate
 
@@ -185,7 +168,37 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
 
         self.dismiss(animated: true, completion: nil)
     }
-    
+
+    // MARK: - Action
+    @objc func onDone() {
+        viewModel.submitProfile(info: infoList, profileImage: headerView?.profileImage.image)
+    }
+
+    @objc func onCancel() {
+
+        self.performSegue(withIdentifier: "unwindToProfile", sender: self)
+    }
+
+    @objc func onChangeProfilePhoto(){
+        let optionMenu = UIAlertController(title: nil, message: "Change Profile Photo", preferredStyle: .actionSheet)
+
+        let cameraAction = UIAlertAction(title: "Take Photo", style: .default) { (alert) in
+            self.camera()
+        }
+
+        let libraryAction = UIAlertAction(title: "Choose From Library", style: .default) { (alert) in
+            self.photoLibrary()
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+
+        optionMenu.addAction(cameraAction)
+        optionMenu.addAction(libraryAction)
+        optionMenu.addAction(cancelAction)
+
+        self.present(optionMenu, animated: true, completion: nil)
+    }
+
     //MARK: - private function
     func camera() {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -206,15 +219,6 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
             self.present(imagePicker, animated: true, completion: nil)
         }
     }
-
-    func setUpLoading() {
-
-        activityIndicator.center = self.view.center
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-        view.addSubview(activityIndicator)
-    }
-
 }
 
 class ProfileCell: UITableViewCell {
@@ -249,7 +253,7 @@ class ProfileCell: UITableViewCell {
         inputText.snp.makeConstraints { (make) in
             make.left.equalTo(labelField.snp.right).offset(padding.left)
             make.centerY.equalTo(self.snp.centerY)
-            make.height.equalTo(25)
+            make.height.equalTo(inputText.frame.height)
             make.right.equalToSuperview().inset(padding.right)
         }
     }

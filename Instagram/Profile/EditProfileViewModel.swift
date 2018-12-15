@@ -91,18 +91,24 @@ class EditProfileModel: NSObject {
             return
         }
 
-        dataManager.fetchUserData(userId: userID) { [weak self] (profile, error) in
-            if let profile = profile {
+        DispatchQueue.global().async { [weak self] in
+            self?.dataManager.fetchUserData(userId: userID) { [weak self] (profile, error) in
 
-                self?.accountData = [
-                    Profile(field: ProfileField.name.rawValue, data: profile.fullname),
-                    Profile(field: ProfileField.username.rawValue, data: profile.username),
-                    Profile(field: ProfileField.email.rawValue, data: profile.email),
-                    Profile(field: ProfileField.bio.rawValue, data: profile.bio)]
+                DispatchQueue.main.async {
+                    if let profile = profile {
 
-                self?.profilePicture = profile.profilePicture
+                        self?.accountData = [
+                            Profile(field: ProfileField.name.rawValue, data: profile.fullname),
+                            Profile(field: ProfileField.username.rawValue, data: profile.username),
+                            Profile(field: ProfileField.email.rawValue, data: profile.email),
+                            Profile(field: ProfileField.bio.rawValue, data: profile.bio)]
+
+                        self?.profilePicture = profile.profilePicture
+                    }
+                }
             }
         }
+
     }
 
     func submitProfile(info: [Profile], profileImage: UIImage?) {

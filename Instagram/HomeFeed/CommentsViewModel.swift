@@ -76,22 +76,27 @@ class CommentsViewModel: NSObject {
 
         var list = [CommentCellViewModel]()
 
-        dataManager.fetchComments(postId: postId) { [weak self] (objects, error) in
-            self?.isLoading = false
+        DispatchQueue.global().async { [weak self] in
+            self?.dataManager.fetchComments(postId: postId) { [weak self] (objects, error) in
 
-            if error == nil {
-                for comment in objects {
+                DispatchQueue.main.async {
+                    self?.isLoading = false
 
-                    if let comment = comment {
+                    if error == nil {
+                        for comment in objects {
 
-                        let text = String(describing: comment.username ?? "")
-                            + ": " + String(describing: comment.text ?? "")
-                        let data = CommentCellViewModel(postId: comment.postId ?? "", userId: comment.userId ?? "", replyUser: comment.replyUser, text: text, isLike: comment.isLike, imageUrl: comment.profileImageUrl)
+                            if let comment = comment {
 
-                        list.append(data)
+                                let text = String(describing: comment.username ?? "")
+                                    + ": " + String(describing: comment.text ?? "")
+                                let data = CommentCellViewModel(postId: comment.postId ?? "", userId: comment.userId ?? "", replyUser: comment.replyUser, text: text, isLike: comment.isLike, imageUrl: comment.profileImageUrl)
+
+                                list.append(data)
+                            }
+                        }
+                        self?.cellViewModel = list
                     }
                 }
-                self?.cellViewModel = list
             }
         }
 
@@ -100,24 +105,28 @@ class CommentsViewModel: NSObject {
 
 
     func writeComment(replayToUserId: String?, text: String?) {
-
         self.isLoading = true
 
-        var data: [String: String] = [String: String]()
+        DispatchQueue.global().async { [weak self] in
+            var data: [String: String] = [String: String]()
 
-        data["text"] = text ?? ""
-        data["post_id"] = postId
-        data["replay_to_user"] = replayToUserId ?? ""
+            data["text"] = text ?? ""
+            data["post_id"] = self?.postId
+            data["replay_to_user"] = replayToUserId ?? ""
 
-        dataManager.addComment(data: data) { [weak self] (error) in
-            self?.isLoading = false
+            self?.dataManager.addComment(data: data) { [weak self] (error) in
+                DispatchQueue.main.async {
+                    self?.isLoading = false
 
-            if error != nil {
-                self?.postAfterCompletion!(false, "Comment Could Not Be Posted!", "Please try again later.")
-            } else {
-                self?.postAfterCompletion!(true, nil, nil)
+                    if error != nil {
+                        self?.postAfterCompletion!(false, "Comment Could Not Be Posted!", "Please try again later.")
+                    } else {
+                        self?.postAfterCompletion!(true, nil, nil)
+                    }
+                }
             }
         }
+
     }
 }
 

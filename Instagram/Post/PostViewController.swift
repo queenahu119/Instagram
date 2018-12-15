@@ -10,7 +10,6 @@ import UIKit
 
 class PostViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate {
 
-
     @IBOutlet weak var imageViewToPost: UIImageView!
     @IBOutlet weak var comment: UITextView!
     @IBOutlet weak var chooseFromLibraryButton: UIButton!
@@ -83,6 +82,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
 
     }
 
+    // MARK: - Action
     @IBAction func useLibraryPhotoButton(_ sender: Any) {
         photoLibrary()
     }
@@ -97,11 +97,12 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
 
             Helper.displayAlert(vc: self, title: "Image may have some problems.", message: "Please try again later.", completion: nil)
         }
-        
-        let data: [String: AnyObject] = ["comment": self.comment, "image": self.imageViewToPost]
 
-        viewModel.postMedia(info: data)
+        if let image = self.imageViewToPost.image {
+            let data: [String: AnyObject] = ["comment": self.comment?.text as AnyObject, "image": image]
 
+            viewModel.postMedia(info: data)
+        }
     }
 
     func camera() {
@@ -132,6 +133,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         self.dismiss(animated: true, completion: nil)
     }
 
+    // MARK: - textView delegate
     func textViewDidBeginEditing(_ textView: UITextView) {
 
         if comment.textColor == UIColor.lightGray {
@@ -155,6 +157,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         return true
     }
 
+    // MARK: - Set up UI
     func setUpLoading() {
 
         activityIndicator.center = self.view.center
@@ -193,6 +196,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         }
     }
 
+    // MARK: - Notification
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0 {

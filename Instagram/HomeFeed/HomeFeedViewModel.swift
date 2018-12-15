@@ -29,7 +29,7 @@ class HomeFeedViewModel: NSObject {
     var showAlertClosure: (()->())?
     var updateLoadingStatus: (()->())?
 
-
+    // MARK: - 
     private var cellViewModel: [FeedCellViewModel] = [FeedCellViewModel](){
         didSet {
             self.reloadTableViewClosure?()
@@ -87,31 +87,35 @@ class HomeFeedViewModel: NSObject {
             return
         }
 
-        dataManager.fetchMedias(userId: userID) { (posts) in
-            self.isLoading = false
-            
-            guard let posts = posts else {
-                print("No any post.")
-                return
-            }
+        DispatchQueue.global().async { [weak self] in
+            self?.dataManager.fetchMedias(userId: userID) { [weak self] (posts) in
 
-            var listByUser:[FeedCellViewModel] = [FeedCellViewModel]()
+                DispatchQueue.main.async {
+                    self?.isLoading = false
 
-            for post in posts {
-                var commentString = ""
-                for comment in post.comments {
-                    if let text = comment?.text {
-                        commentString = commentString + "\(text) \n"
+                    guard let posts = posts else {
+                        print("No any post.")
+                        return
                     }
+
+                    var listByUser:[FeedCellViewModel] = [FeedCellViewModel]()
+
+                    for post in posts {
+                        var commentString = ""
+                        for comment in post.comments {
+                            if let text = comment?.text {
+                                commentString = commentString + "\(text) \n"
+                            }
+                        }
+
+                        listByUser.append(FeedCellViewModel(id: post.id ?? "", userId: post.userId ?? "", username: post.username!, profileImageUrl: post.profileImageUrl, location: post.location, numOfLike: post.numOfLike, comments: commentString, imageUrls: post.imageUrls, dateText: post.createdTime))
+                    }
+
+                    listByUser.sort(by: {Double(($0.dateText?.timeIntervalSinceNow)!) > Double(($1.dateText?.timeIntervalSinceNow)!)})
+
+                    self?.cellViewModel = listByUser
                 }
-
-                listByUser.append(FeedCellViewModel(id: post.id ?? "", userId: post.userId ?? "", username: post.username!, profileImageUrl: post.profileImageUrl, location: post.location, numOfLike: post.numOfLike, comments: commentString, imageUrls: post.imageUrls, dateText: post.createdTime))
             }
-
-            listByUser.sort(by: {Double(($0.dateText?.timeIntervalSinceNow)!) > Double(($1.dateText?.timeIntervalSinceNow)!)})
-
-            self.cellViewModel = listByUser
-
         }
     }
 
