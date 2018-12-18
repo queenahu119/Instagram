@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import SVProgressHUD
 
 fileprivate struct CollectionSize {
     static var numberOfColumns: Int = 3
@@ -19,8 +20,6 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
 
     var usernameLabel: UILabel!
-
-    var activityIndicator:UIActivityIndicatorView!
 
     lazy var viewModel: ProfileViewModel = {
         return ProfileViewModel()
@@ -62,23 +61,22 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
             DispatchQueue.main.async {
                 let isLoading = self?.viewModel.isLoading ?? false
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self?.collectionView.alpha = 0.3
-                    })
-                }else {
-                    self?.activityIndicator.stopAnimating()
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self?.collectionView.alpha = 1.0
-                    })
+                    SVProgressHUD.show()
+                } else {
+                    SVProgressHUD.dismiss()
                 }
             }
-
         }
 
         viewModel.initFetchUserInfo()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        SVProgressHUD.dismiss()
+    }
+    
     func setUpNavBar() {
 
         let refreshButton = UIBarButtonItem(title: "refresh", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ProfileViewController.refresh))
@@ -110,7 +108,6 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
         profileInfoView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: 100)
         view.addSubview(profileInfoView)
 
-
         profileStateView.snp.makeConstraints { (make) in
             make.left.right.top.equalTo(view.safeAreaLayoutGuide)
             make.height.equalTo(StateViewHeight)
@@ -126,10 +123,6 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
             make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.top.equalTo(profileInfoView.snp.bottom)
         }
-        activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
-            UIActivityIndicatorViewStyle.gray)
-        activityIndicator.center = self.view.center
-        self.view.addSubview(activityIndicator);
     }
 
     func adjustViewHeight(_ view: ProfileInfoView) {
@@ -142,6 +135,8 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
         if let user = viewModel.getUserInfoViewModel() {
             profileStateView.profile = user
             profileInfoView.profile = user
+
+            usernameLabel.text = user.username
 
             adjustViewHeight(profileInfoView)
         }

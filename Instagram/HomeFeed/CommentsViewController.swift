@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class CommentsViewController: UIViewController, UITextViewDelegate {
 
@@ -17,8 +18,6 @@ class CommentsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var postCommentView: UIView!
 
     var postId: String = ""
-
-    var activityIndicator:UIActivityIndicatorView!
 
     lazy var viewModel: CommentsViewModel = {
         return CommentsViewModel()
@@ -39,20 +38,13 @@ class CommentsViewController: UIViewController, UITextViewDelegate {
         myProfileImageView.layer.cornerRadius = myProfileImageView.frame.height/2
         myProfileImageView.clipsToBounds = true
 
-        activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
-            UIActivityIndicatorViewStyle.gray)
-        activityIndicator.center = self.view.center
-        self.view.addSubview(activityIndicator);
-
         viewModel.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
                 let isLoading = self?.viewModel.isLoading ?? false
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-
-                }else {
-                    self?.activityIndicator.stopAnimating()
-
+                    SVProgressHUD.show()
+                } else {
+                    SVProgressHUD.dismiss()
                 }
             }
         }
@@ -85,6 +77,7 @@ class CommentsViewController: UIViewController, UITextViewDelegate {
         initCommentView()
     }
 
+    // MARK: - Action
     @IBAction func onPostComment(_ sender: UIButton) {
         
         myCommentView.resignFirstResponder()
@@ -94,22 +87,7 @@ class CommentsViewController: UIViewController, UITextViewDelegate {
         }
     }
 
-    func textViewDidBeginEditing(_ textView: UITextView) {
-
-        if myCommentView.textColor == UIColor.lightGray {
-            myCommentView.text = ""
-            myCommentView.textColor = UIColor.black
-        }
-    }
-
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if(text == "\n") {
-            textView.resignFirstResponder()
-            return false
-        }
-        return true
-    }
-
+    // MARK: - setup UI
     func initCommentView() {
         myCommentView.delegate = self
         myCommentView.text = "Write down your caption..."
@@ -156,6 +134,24 @@ class CommentsViewController: UIViewController, UITextViewDelegate {
         }
     }
 
+    // MARK: - UITextViewDelegate
+    func textViewDidBeginEditing(_ textView: UITextView) {
+
+        if myCommentView.textColor == UIColor.lightGray {
+            myCommentView.text = ""
+            myCommentView.textColor = UIColor.black
+        }
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if(text == "\n") {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
+
+    // MARK: - Notification for keyboard
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0 {

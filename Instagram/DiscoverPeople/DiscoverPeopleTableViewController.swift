@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 protocol PeopleCellDelegate : class {
     func PeopleCellDelegateDidTapFollow(_ sender: PeopleCell)
@@ -16,8 +17,6 @@ class DiscoverPeopleTableViewController: UITableViewController, PeopleCellDelega
 
     let peopleCellIdentifier = "PeopleCell"
 
-    var activityIndicator:UIActivityIndicatorView!
-
     lazy var viewModel: DiscoverPeopleViewModel = {
         return DiscoverPeopleViewModel()
     }()
@@ -25,20 +24,13 @@ class DiscoverPeopleTableViewController: UITableViewController, PeopleCellDelega
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
-            UIActivityIndicatorViewStyle.gray)
-        activityIndicator.center = self.view.center
-        self.view.addSubview(activityIndicator);
-        
         viewModel.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
                 let isLoading = self?.viewModel.isLoading ?? false
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-
-                }else {
-                    self?.activityIndicator.stopAnimating()
-
+                    SVProgressHUD.show()
+                } else {
+                    SVProgressHUD.dismiss()
                 }
             }
         }
@@ -50,7 +42,12 @@ class DiscoverPeopleTableViewController: UITableViewController, PeopleCellDelega
         viewModel.initFetch()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
+        SVProgressHUD.dismiss()
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {

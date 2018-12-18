@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SVProgressHUD
 
-class EditProfileTableViewController: UITableViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate {
+class EditProfileTableViewController: UITableViewController {
 
     let HeaderCellId = "HeaderCell"
     let ProfileCellId = "ProfileCell"
@@ -16,30 +17,24 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
     var infoList = [Profile]()
     var profileImage: UIImage!
 
-    let activityIndicator = UIActivityIndicatorView()
-    
     var headerView : UserHeaderTableViewCell!
 
     lazy var viewModel: EditProfileModel = {
         return EditProfileModel()
     }()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setUpNavBar()
-        setUpLoading()
-        
+
         viewModel.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
                 let isLoading = self?.viewModel.isLoading ?? false
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-
-                }else {
-                    self?.activityIndicator.stopAnimating()
-
+                    SVProgressHUD.show()
+                } else {
+                    SVProgressHUD.dismiss()
                 }
             }
         }
@@ -136,39 +131,6 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
         self.navigationItem.leftBarButtonItem = cancelButton
     }
 
-    func setUpLoading() {
-
-        activityIndicator.center = self.view.center
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-        view.addSubview(activityIndicator)
-    }
-
-    //MARK: - UITextFieldDelegate
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-
-        textField.resignFirstResponder()
-        return true
-    }
-
-    @objc func textFieldDidChange(_ textField: UITextField) {
-        if textField.tag >= self.infoList.count {
-            return
-        }
-
-        self.infoList[textField.tag].data = textField.text ?? ""
-    }
-
-    //MARK: - UIImagePickerControllerDelegate
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            headerView?.profileImage.image = image
-        }
-
-        self.dismiss(animated: true, completion: nil)
-    }
-
     // MARK: - Action
     @objc func onDone() {
         viewModel.submitProfile(info: infoList, profileImage: headerView?.profileImage.image)
@@ -221,6 +183,34 @@ class EditProfileTableViewController: UITableViewController, UINavigationControl
     }
 }
 
+extension EditProfileTableViewController: UINavigationControllerDelegate,
+                                        UIImagePickerControllerDelegate,
+                                        UITextFieldDelegate {
+    //MARK: - UITextFieldDelegate
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+
+        textField.resignFirstResponder()
+        return true
+    }
+
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        if textField.tag >= self.infoList.count {
+            return
+        }
+
+        self.infoList[textField.tag].data = textField.text ?? ""
+    }
+
+    //MARK: - UIImagePickerControllerDelegate
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            headerView?.profileImage.image = image
+        }
+
+        self.dismiss(animated: true, completion: nil)
+    }
+}
 class ProfileCell: UITableViewCell {
 
     @IBOutlet weak var labelField: UILabel!

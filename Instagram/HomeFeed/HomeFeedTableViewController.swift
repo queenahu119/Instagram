@@ -7,13 +7,12 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, HomeFeedCellDelegate {
 
     let feedCell = "feedCell"
 
-    var activityIndicator:UIActivityIndicatorView!
-    
     lazy var viewModel: HomeFeedViewModel = {
         return HomeFeedViewModel()
     }()
@@ -26,20 +25,13 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
         self.tableView.rowHeight = UITableViewAutomaticDimension;
         self.tableView.estimatedRowHeight = 200;
 
-        activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:
-            UIActivityIndicatorViewStyle.gray)
-        activityIndicator.center = self.view.center
-        self.view.addSubview(activityIndicator);
-
         viewModel.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
                 let isLoading = self?.viewModel.isLoading ?? false
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-
-                }else {
-                    self?.activityIndicator.stopAnimating()
-
+                    SVProgressHUD.show()
+                } else {
+                    SVProgressHUD.dismiss()
                 }
             }
         }
@@ -52,7 +44,6 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
     }
 
     override func viewWillAppear(_ animated: Bool) {
-
         viewModel.initFetch()
         viewModel.fetchAllMedias()
     }
@@ -66,6 +57,11 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
     }
 
     @IBAction func logOutUser(_ sender: Any) {
+
+        if SVProgressHUD.isVisible() {
+            SVProgressHUD.dismiss()
+        }
+        
         viewModel.logOut()
 
         Helper.displayAlert(vc: self, title: "Log Out Successfully", message: "") {

@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import SVProgressHUD
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
 
@@ -27,14 +28,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setUpUI()
-        
-        password.delegate = self
+        setupView()
 
         viewModel.initFetch()
     }
 
-    func setUpUI() {
+    override func viewDidAppear(_ animated: Bool) {
+        
+        if viewModel.isLogin() {
+            self.performSegue(withIdentifier: "showMainView", sender: self)
+        }
+    }
+
+    // MARK: - setup UI
+    func setupView() {
 
         view.backgroundColor = UIColor.white
 
@@ -45,7 +52,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
         username.delegate = self
         password.delegate = self
-        
+
         appName.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(view)
             make.height.equalTo(45)
@@ -86,16 +93,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             make.width.equalTo(switchLoninModeButton.frame.size.width)
             make.bottom.equalTo(noteLabel.snp.bottom)
         }
-
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        
-        if viewModel.isLogin() {
-            self.performSegue(withIdentifier: "showMainView", sender: self)
-        }
-    }
-
+    // MARK: - Actions
     @IBAction func signupOrLogin(_ sender: Any) {
 
         // Validate Text Field
@@ -155,6 +155,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
+    // MARK: - UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
         textField.resignFirstResponder()

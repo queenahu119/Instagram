@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SVProgressHUD
 
-class PostViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate {
+class PostViewController: UIViewController {
 
     @IBOutlet weak var imageViewToPost: UIImageView!
     @IBOutlet weak var comment: UITextView!
@@ -20,8 +21,6 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
     lazy fileprivate var viewModel: PostViewModel = {
         return PostViewModel()
     }()
-
-    let activityIndicator = UIActivityIndicatorView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,18 +42,16 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         // Move view up when keyboard appears
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: Notification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: Notification.Name.UIKeyboardWillHide, object: nil)
-        
-        setUpLoading()
+
         setupLayout()
 
         viewModel.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
                 let isLoading = self?.viewModel.isLoading ?? false
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-
-                }else {
-                    self?.activityIndicator.stopAnimating()
+                    SVProgressHUD.show()
+                } else {
+                    SVProgressHUD.dismiss()
                 }
             }
         }
@@ -82,6 +79,12 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
 
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        SVProgressHUD.dismiss()
+    }
+    
     // MARK: - Action
     @IBAction func useLibraryPhotoButton(_ sender: Any) {
         photoLibrary()
@@ -125,47 +128,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         }
     }
 
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            imageViewToPost.image = image
-        }
-
-        self.dismiss(animated: true, completion: nil)
-    }
-
-    // MARK: - textView delegate
-    func textViewDidBeginEditing(_ textView: UITextView) {
-
-        if comment.textColor == UIColor.lightGray {
-            comment.text = ""
-            comment.textColor = UIColor.black
-        }
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if comment.text.isEmpty {
-            comment.text = "Write down your caption..."
-            comment.textColor = UIColor.lightGray
-        }
-    }
-
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if(text == "\n") {
-            textView.resignFirstResponder()
-            return false
-        }
-        return true
-    }
-
-    // MARK: - Set up UI
-    func setUpLoading() {
-
-        activityIndicator.center = self.view.center
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-        view.addSubview(activityIndicator)
-    }
-
+    // MARK: - Setup UI
     func setupLayout() {
         let padding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
@@ -209,5 +172,42 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         if self.view.frame.origin.y != 0 {
             self.view.frame.origin.y = 0
         }
+    }
+}
+
+extension PostViewController: UINavigationControllerDelegate,
+                                UIImagePickerControllerDelegate,
+                                UITextViewDelegate {
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            imageViewToPost.image = image
+        }
+
+        self.dismiss(animated: true, completion: nil)
+    }
+
+    // MARK: - textView delegate
+    func textViewDidBeginEditing(_ textView: UITextView) {
+
+        if comment.textColor == UIColor.lightGray {
+            comment.text = ""
+            comment.textColor = UIColor.black
+        }
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if comment.text.isEmpty {
+            comment.text = "Write down your caption..."
+            comment.textColor = UIColor.lightGray
+        }
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if(text == "\n") {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
     }
 }

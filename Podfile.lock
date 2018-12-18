@@ -5,10 +5,12 @@ PODS:
   - Parse/Core (1.17.2):
     - Bolts/Tasks (~> 1.9)
   - SnapKit (4.0.1)
+  - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
   - Parse
   - SnapKit (~> 4.0.0)
+  - SVProgressHUD (from `https://github.com/SVProgressHUD/SVProgressHUD.git`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -16,11 +18,21 @@ SPEC REPOS:
     - Parse
     - SnapKit
 
+EXTERNAL SOURCES:
+  SVProgressHUD:
+    :git: https://github.com/SVProgressHUD/SVProgressHUD.git
+
+CHECKOUT OPTIONS:
+  SVProgressHUD:
+    :commit: e2a6aaa12321962cbe9fbecc370475f369c6566c
+    :git: https://github.com/SVProgressHUD/SVProgressHUD.git
+
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: 92befb89b0fb628a31ac72dc0fde60bb85a44044
+PODFILE CHECKSUM: aef95a30835663e9ea605fcaf3a4e7dd7247f9ee
 
 COCOAPODS: 1.5.3

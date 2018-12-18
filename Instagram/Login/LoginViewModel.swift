@@ -16,12 +16,6 @@ class LoginViewModel: NSObject {
         self.dataManager = dataManager
     }
 
-    var isLoading: Bool = false {
-        didSet {
-            self.updateLoadingStatus?()
-        }
-    }
-
     func initFetch() {
     }
 
@@ -46,8 +40,6 @@ class LoginViewModel: NSObject {
         }
 
         dataManager.signUp(username, password: password) { (success, error) in
-            self.isLoading = false
-
             if let error = error {
                 showAlert("Could not sign you up", error.localizedDescription)
             } else {
@@ -66,8 +58,6 @@ class LoginViewModel: NSObject {
         }
 
         dataManager.logIn(username, password: password) { (success, error) in
-            self.isLoading = false
-
             if success {
                 performSegue()
             } else {
