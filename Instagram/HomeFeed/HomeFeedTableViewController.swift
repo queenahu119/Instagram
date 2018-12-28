@@ -96,7 +96,7 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
 
         viewModel.getProfileImageOfCell(at: indexPath as IndexPath) { (image, error) in
             DispatchQueue.main.async {
-                cell.profile.image = image
+                cell.profile.image = image?.circleMask
             }
         }
 

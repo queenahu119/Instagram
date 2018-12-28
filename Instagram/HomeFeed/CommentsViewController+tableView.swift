@@ -35,14 +35,14 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 
         viewModel.updateProfileImageAfterCompletion = { (image, response, error) in
             DispatchQueue.main.async {
-                cell.profileImage.image = image
+                cell.profileImage.image = image?.circleMask
             }
         }
 
         viewModel.getImageOfCell(at: indexPath) { (image, error) in
             if error == nil {
                 DispatchQueue.main.async {
-                    cell.profileImage.image = image
+                    cell.profileImage.image = image?.circleMask
                 }
             }
         }

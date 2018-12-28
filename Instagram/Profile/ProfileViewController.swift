@@ -145,7 +145,7 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
             guard let image = image, error == nil else { return }
 
             DispatchQueue.main.async {
-                self.profileStateView.profileImageView.image = image
+                self.profileStateView.profileImageView.image = image.circleMask
             }
         }
     }

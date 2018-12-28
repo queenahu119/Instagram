@@ -68,7 +68,7 @@ class CommentsViewController: UIViewController, UITextViewDelegate {
 
         viewModel.updateProfileImageAfterCompletion = { [weak self] (image, response, error) in
             DispatchQueue.main.async {
-                self?.myProfileImageView.image = image
+                self?.myProfileImageView.image = image?.circleMask
             }
         }
     }

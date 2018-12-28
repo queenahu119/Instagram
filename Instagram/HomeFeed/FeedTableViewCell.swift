@@ -46,7 +46,6 @@ class FeedTableViewCell: UITableViewCell {
                 textNumOfLike.text = (numOfLike > 1) ? "\(numOfLike) likes" : "\(numOfLike) like"
             }
 
-            // Adjust text's height
             if let comment = post?.comments {
                 let text = comment.replacingOccurrences(of: "\n", with: "")
                 textComments.text = text
@@ -78,34 +77,31 @@ class FeedTableViewCell: UITableViewCell {
         viewCommentsButton.titleLabel?.font = UIFont.systemFont(ofSize: 13.5)
 
         profile.image = defaultBackgroundColor.imageRepresentation
-        profile.layer.masksToBounds = false
         profile.layer.cornerRadius = profile.frame.size.width / 2
         profile.clipsToBounds = true
 
         postStackView.axis  = .vertical
         postStackView.distribution  = UIStackViewDistribution.equalSpacing
         postStackView.alignment = UIStackViewAlignment.top
-        postStackView.spacing   = 2.0
+        postStackView.spacing   = 0.0
+        postStackView.translatesAutoresizingMaskIntoConstraints = false
 
         textComments.isEditable = false
         textComments.isSelectable = false
         textComments.isScrollEnabled = false
         textComments.textContainer.maximumNumberOfLines = 0
         textComments.textContainer.lineBreakMode = .byTruncatingTail
-        textComments.translatesAutoresizingMaskIntoConstraints = true
+        textComments.translatesAutoresizingMaskIntoConstraints = false
         textComments.contentInset = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: -5)
         textComments.textContainer.maximumNumberOfLines = 4;
         textComments.textContainer.lineBreakMode = .byWordWrapping
-
-        textComments.autoresizingMask = .flexibleWidth
-        viewCommentsButton.autoresizingMask = .flexibleWidth
-        textPostTime.autoresizingMask = .flexibleWidth
 
         imageFile.image = defaultBackgroundColor.imageRepresentation
         imageFile.contentMode = .scaleToFill
 
         textNumOfLike.sizeToFit()
         textPostTime.sizeToFit()
+        textComments.sizeToFit()
         viewCommentsButton.sizeToFit()
 
         setupLayout()
@@ -212,7 +208,6 @@ class FeedTableViewCell: UITableViewCell {
     }
 
     func updatePostStackView() {
-
         if textComments.text != "" {
             textComments.isHidden = false
             viewCommentsButton.isHidden = false

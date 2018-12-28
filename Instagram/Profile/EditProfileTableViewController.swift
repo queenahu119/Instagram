@@ -94,7 +94,7 @@ class EditProfileTableViewController: UITableViewController {
 
             viewModel.getProfileImage(completion: { (image, response, error) in
                 DispatchQueue.main.async {
-                    self.headerView.profileImage.image  = image
+                    self.headerView.profileImage.image  = image?.circleMask
                 }
             })
 
