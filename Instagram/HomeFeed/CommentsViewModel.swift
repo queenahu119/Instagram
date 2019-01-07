@@ -86,10 +86,7 @@ class CommentsViewModel: NSObject {
                         for comment in objects {
 
                             if let comment = comment {
-
-                                let text = String(describing: comment.username ?? "")
-                                    + ": " + String(describing: comment.text ?? "")
-                                let data = CommentCellViewModel(postId: comment.postId ?? "", userId: comment.userId ?? "", replyUser: comment.replyUser, text: text, isLike: comment.isLike, imageUrl: comment.profileImageUrl)
+                                let data = CommentCellViewModel(postId: comment.postId ?? "", userId: comment.userId ?? "", userName: comment.username ?? "", replyUser: comment.replyUser, text: comment.text ?? "", isLike: comment.isLike, imageUrl: comment.profileImageUrl)
 
                                 list.append(data)
                             }
@@ -133,6 +130,7 @@ class CommentsViewModel: NSObject {
 struct CommentCellViewModel {
     var postId: String
     var userId: String
+    var userName: String
     var replyUser: String?
     var text: String?
     var isLike: Bool

@@ -40,20 +40,33 @@ class FeedTableViewCell: UITableViewCell {
 
     var post: FeedCellViewModel? {
         didSet {
-            username.text = post?.username
+            guard let post = post else {
+                return
+            }
 
-            if let numOfLike = post?.numOfLike {
+            username.text = post.username
+
+            if let numOfLike = post.numOfLike {
                 textNumOfLike.text = (numOfLike > 1) ? "\(numOfLike) likes" : "\(numOfLike) like"
             }
 
-            if let comment = post?.comments {
+            if let comment = post.comments {
                 let text = comment.replacingOccurrences(of: "\n", with: "")
-                textComments.text = text
+
+                let userName = post.username + " "
+                let attrsForName = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 17)]
+                let attrsForComment = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 17)]
+
+                let mutableString = NSMutableAttributedString(string:userName , attributes:attrsForName)
+                let mutableStringForComment = NSMutableAttributedString(string: text, attributes: attrsForComment)
+
+                mutableString.append(mutableStringForComment)
+                textComments.attributedText = mutableString
             } else {
                 textComments.text = ""
             }
 
-            if let creationDate = post?.dateText {
+            if let creationDate = post.dateText {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "EEEE, MMMM dd, yyyy, HH:mm"
                 textPostTime.text = dateFormatter.string(from: creationDate)

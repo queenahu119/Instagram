@@ -10,22 +10,45 @@ import UIKit
 
 class CommentTableViewCell: UITableViewCell {
 
+    let profileImageSize = 40
     @IBOutlet weak var profileImage: UIImageView!
-    @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var likeButton: UIButton!
+    @IBOutlet weak var commentLabel: UILabel!
+
+    var didSetupConstraints = false
+
+    var comment: CommentCellViewModel? {
+        didSet {
+            guard let comment = comment else {
+                return
+            }
+
+            let userName = comment.userName + " "
+            let attrsForName = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 17)]
+            let attrsForComment = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 17)]
+
+            let mutableString = NSMutableAttributedString(string:userName , attributes:attrsForName)
+            let mutableStringForComment = NSMutableAttributedString(string: comment.text ?? "", attributes: attrsForComment)
+
+            mutableString.append(mutableStringForComment)
+            commentLabel.attributedText = mutableString
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
 
         self.selectionStyle = .none
+
+        profileImage.translatesAutoresizingMaskIntoConstraints = false
         profileImage.layer.masksToBounds = false
-        profileImage.layer.cornerRadius = profileImage.frame.height/2
+        profileImage.layer.cornerRadius = CGFloat(profileImageSize) / 2
         profileImage.clipsToBounds = true
 
-        textView.isEditable = false
-        textView.isSelectable = false
+        commentLabel.numberOfLines = 0
 
-        setupLayout()
+        likeButton.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.setImage(UIImage(named: "tableView_btn_heart_n"), for: .normal)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -34,25 +57,38 @@ class CommentTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    override func updateConstraints() {
+
+        if !didSetupConstraints {
+            setupLayout()
+
+            didSetupConstraints = true
+        }
+        super.updateConstraints()
+    }
+
     func setupLayout() {
-        let padding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        let padding = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10)
 
         profileImage.snp.makeConstraints { (make) in
             make.left.equalToSuperview().inset(padding.left)
-            make.centerY.equalTo(self.snp.centerY)
-            make.size.equalTo(profileImage.frame.height)
+            make.right.equalTo(commentLabel.snp.left).offset(-padding.right)
+            make.centerY.equalTo(self.contentView.snp.centerY)
+            make.size.equalTo(profileImageSize)
         }
 
-        textView.snp.makeConstraints { (make) in
+        commentLabel.snp.makeConstraints { (make) in
             make.left.equalTo(profileImage.snp.right).offset(padding.left)
             make.top.bottom.equalToSuperview().inset(padding.top)
             make.right.equalTo(likeButton.snp.left).offset(-padding.right)
+            make.height.greaterThanOrEqualTo(30)
         }
 
         likeButton.snp.makeConstraints { (make) in
+            make.left.equalTo(commentLabel.snp.right).offset(padding.left)
             make.right.equalToSuperview().inset(padding.right)
-            make.centerY.equalTo(self.snp.centerY)
-            make.size.equalTo(30)
+            make.top.equalToSuperview().inset(padding.top)
+            make.size.equalTo(20)
         }
     }
 

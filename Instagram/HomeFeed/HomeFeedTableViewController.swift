@@ -74,7 +74,6 @@ class HomeFeedTableViewController: UITableViewController, UITabBarDelegate, Home
     }
 
     func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        print(#function)
         viewModel.fetchAllMedias()
     }
     // MARK: - Table view data source

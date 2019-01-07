@@ -22,16 +22,12 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
         return viewModel.numberOfCells
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
-    }
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsCell", for: indexPath) as! CommentTableViewCell
 
         let cellViewModel: CommentCellViewModel = viewModel.getCellViewModel(at: indexPath)
 
-        cell.textView.text = cellViewModel.text
+        cell.comment = cellViewModel
 
         viewModel.updateProfileImageAfterCompletion = { (image, response, error) in
             DispatchQueue.main.async {
@@ -47,6 +43,9 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             }
         }
 
+        cell.setNeedsUpdateConstraints()
+        cell.layoutIfNeeded()
+        
         return cell
     }
 }
