@@ -20,6 +20,7 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
 
     let headerId = "headerId"
+    private var profileHeaderView: ProfileStateView?
 
     var usernameLabel: UILabel = {
         let textLabel = UILabel()
@@ -93,6 +94,12 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
     }
 
     func setupView() {
+
+        let flowLayout = UICollectionViewFlowLayout()
+        self.collectionView.collectionViewLayout = flowLayout
+        let height = UIScreen.main.bounds.width*0.4 + 50
+        flowLayout.headerReferenceSize = CGSize(width: collectionView.frame.width, height: height)
+
         collectionView.snp.makeConstraints { (make) in
             make.top.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
@@ -164,31 +171,34 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
 
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-
-        let height = UIScreen.main.bounds.width*0.4 + 100
-        return CGSize(width: UIScreen.main.bounds.width, height: height)
-
-    }
-
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
-            headerId, for: indexPath) as! ProfileStateView
-        header.profile = viewModel.getUserInfoViewModel()
-        header.delegate = self
+        profileHeaderView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
+            headerId, for: indexPath) as? ProfileStateView
 
-        viewModel.getProfileImage(url: nil) { (image, response, error) in
-            guard let image = image, error == nil else { return }
+        if let header = profileHeaderView {
+            header.profile = viewModel.getUserInfoViewModel()
+            header.delegate = self
 
-            DispatchQueue.main.async {
-                header.profileImageView.image = image.circleMask
+            let height = UIScreen.main.bounds.width*0.4 + header.bioViewHeight
+            let flowLayout = UICollectionViewFlowLayout()
+            self.collectionView.collectionViewLayout = flowLayout
+            flowLayout.headerReferenceSize = CGSize(width: header.frame.width, height: height)
+
+            viewModel.getProfileImage(url: nil) { (image, response, error) in
+                guard let image = image, error == nil else { return }
+
+                DispatchQueue.main.async {
+                    header.profileImageView.image = image.circleMask
+                }
             }
+
+            header.layoutIfNeeded()
+
+            return header
         }
 
-        header.layoutIfNeeded()
-
-        return header
+        return UICollectionReusableView()
     }
 
     //MARK: UICollectionViewDelegate
