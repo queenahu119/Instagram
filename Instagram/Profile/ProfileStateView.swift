@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import SnapKit
 
 protocol ProfileStateViewDelegate : class {
     func profileStateViewDelegateDidTapEdit(_ sender: ProfileStateView)
 }
 
-class ProfileStateView: CustomView {
+class ProfileStateView: UICollectionReusableView {
     weak var delegate: ProfileStateViewDelegate?
 
     var profile: ProfilData? {
@@ -24,6 +25,11 @@ class ProfileStateView: CustomView {
             postView.numLabel.text = String(profile.post)
             followersView.numLabel.text = String(profile.followers)
             followingsView.numLabel.text = String(profile.following)
+
+            textFullname.text = profile.fullname
+            textBio.text = profile.bio
+
+            adjustBioTextHeight()
         }
     }
 
@@ -32,7 +38,9 @@ class ProfileStateView: CustomView {
     var followingsView = StateView()
 
     let profileImageSize: CGFloat = UIScreen.main.bounds.width*0.25
-
+    var bioViewHeight: CGFloat = 100
+    var bioViewHeightConstraint: Constraint?
+    
     var profileImageView: UIImageView = {
         var imageView = UIImageView()
         imageView.layer.masksToBounds = false
@@ -53,8 +61,33 @@ class ProfileStateView: CustomView {
         return button
     }()
 
+    var textFullname: UILabel = {
+        let txt = UILabel()
+        txt.font = UIFont.boldSystemFont(ofSize: 14)
+        txt.sizeToFit()
+        return txt
+    }()
+
+    var textBio: UILabel = {
+        let txt = UILabel()
+        txt.font = UIFont.systemFont(ofSize: 14)
+        txt.numberOfLines = 0
+        txt.sizeToFit()
+        return txt
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupViews()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
     // MARK: - layout
-    override func setupViews() {
+    func setupViews() {
 
         let padding = UIEdgeInsetsMake(5, 12, -5, -12)
         let stateWidth = (UIScreen.main.bounds.width - profileImageSize - padding.left*3)/3
@@ -68,7 +101,6 @@ class ProfileStateView: CustomView {
         self.addSubview(editProfileButton)
 
         profileImageView.image = defaultBackgroundColor.imageRepresentation
-
         profileImageView.layer.cornerRadius = profileImageSize/2
 
         postView.textLabel.text = "posts"
@@ -79,7 +111,7 @@ class ProfileStateView: CustomView {
 
         profileImageView.snp.makeConstraints { make in
             make.left.equalTo(self.snp.left).offset(padding.left)
-            make.centerY.equalTo(self.safeAreaLayoutGuide.snp.centerY)
+            make.top.equalTo(self.snp.top).offset(20)
             make.height.equalTo(profileImageSize)
             make.width.equalTo(profileImageSize)
         }
@@ -113,6 +145,29 @@ class ProfileStateView: CustomView {
             make.right.equalTo(self.snp.right).offset(padding.right)
             make.bottom.equalTo(profileImageView.snp.bottom).offset(padding.bottom)
         }
+
+        addSubview(textFullname)
+        addSubview(textBio)
+
+        textFullname.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview().inset(padding.left)
+            make.top.equalTo(profileImageView.snp.bottom).offset(10)
+            make.height.equalTo(20)
+        }
+
+        textBio.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview().inset(padding.left)
+            make.top.equalTo(textFullname.snp.bottom).offset(10)
+            bioViewHeightConstraint = make.height.equalTo(bioViewHeight).constraint
+        }
+    }
+
+    func adjustBioTextHeight() {
+        let fixedWidth = textBio.frame.size.width
+        let newSize = textBio.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        self.bioViewHeightConstraint?.update(offset: newSize.height)
+        self.layoutIfNeeded()
+        bioViewHeight = newSize.height + 20
     }
 
     // MARK: - Actions
@@ -154,5 +209,30 @@ class StateView: CustomView {
             make.height.equalTo(20)
             make.left.right.equalToSuperview()
         }
+    }
+}
+
+class CustomView: UIView {
+    var shouldSetupConstraints = true
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    override func updateConstraints() {
+        if(shouldSetupConstraints) {
+            // AutoLayout constraints
+            setupViews()
+            shouldSetupConstraints = false
+        }
+        super.updateConstraints()
+    }
+
+    // MARK: - layout
+    func setupViews() {
     }
 }

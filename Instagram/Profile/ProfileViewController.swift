@@ -11,33 +11,30 @@ import SnapKit
 import SVProgressHUD
 
 fileprivate struct CollectionSize {
-    static var numberOfColumns: Int = 3
-    static var cellPadding: CGFloat = 6
+    static var numberOfRow: Int = 3
+    static var cellPadding: CGFloat = 3
 }
 
 class ProfileViewController: UIViewController, ProfileStateViewDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    var usernameLabel: UILabel!
+    let headerId = "headerId"
+
+    var usernameLabel: UILabel = {
+        let textLabel = UILabel()
+        textLabel.text = ""
+        textLabel.textColor = UIColor.black
+        textLabel.textAlignment = NSTextAlignment.left
+
+        return textLabel
+    }()
 
     lazy var viewModel: ProfileViewModel = {
         return ProfileViewModel()
     }()
 
     var imageCache = NSCache<NSString, UIImage>()
-
-    var profileStateView: ProfileStateView = {
-        let view = ProfileStateView()
-        return view
-    }()
-
-    var infoViewHeightConstraint: Constraint?
-    var profileInfoView: ProfileInfoView = {
-        let view = ProfileInfoView()
-        return view
-    }()
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,9 +85,7 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
 
         let customView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 44.0))
         usernameLabel = UILabel(frame: CGRect(x: 0, y: 0.0, width: 65.0, height: 44.0))
-        usernameLabel.text = ""
-        usernameLabel.textColor = UIColor.black
-        usernameLabel.textAlignment = NSTextAlignment.left
+
         customView.addSubview(usernameLabel)
 
         let leftButton = UIBarButtonItem(customView: customView)
@@ -98,55 +93,19 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
     }
 
     func setupView() {
-
-        let screenWidth = UIScreen.main.bounds.width
-        let StateViewHeight = UIScreen.main.bounds.width*0.35
-        profileStateView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: StateViewHeight)
-        profileStateView.delegate = self
-        view.addSubview(profileStateView)
-
-        profileInfoView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: 100)
-        view.addSubview(profileInfoView)
-
-        profileStateView.snp.makeConstraints { (make) in
-            make.left.right.top.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(StateViewHeight)
-        }
-
-        profileInfoView.snp.makeConstraints { (make) in
-            make.left.right.equalTo(view.safeAreaLayoutGuide)
-            make.top.equalTo(profileStateView.snp.bottom)
-            infoViewHeightConstraint = make.height.equalTo(profileInfoView.frame.height).constraint
-        }
-
         collectionView.snp.makeConstraints { (make) in
-            make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.top.equalTo(profileInfoView.snp.bottom)
+            make.top.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-    }
 
-    func adjustViewHeight(_ view: ProfileInfoView) {
-        let height = view.height
-        self.infoViewHeightConstraint?.update(offset: height)
-        self.view.layoutIfNeeded()
+        collectionView?.register(ProfileStateView.self, forSupplementaryViewOfKind:
+            UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
     }
 
     @objc func updateUserData() {
         if let user = viewModel.getUserInfoViewModel() {
-            profileStateView.profile = user
-            profileInfoView.profile = user
-
             usernameLabel.text = user.username
 
-            adjustViewHeight(profileInfoView)
-        }
-
-        viewModel.getProfileImage(url: nil) { (image, response, error) in
-            guard let image = image, error == nil else { return }
-
-            DispatchQueue.main.async {
-                self.profileStateView.profileImageView.image = image.circleMask
-            }
+            self.collectionView.reloadData()
         }
     }
 
@@ -170,7 +129,7 @@ class ProfileViewController: UIViewController, ProfileStateViewDelegate {
     }
 }
 
-extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
+extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     // MARK: - collectionView
     //MARK: UICollectionViewDataSource
@@ -205,9 +164,31 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
 
     }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+
+        let height = UIScreen.main.bounds.width*0.4 + 100
+        return CGSize(width: UIScreen.main.bounds.width, height: height)
+
+    }
+
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "collectionCell", for: indexPath)
-        return view
+
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
+            headerId, for: indexPath) as! ProfileStateView
+        header.profile = viewModel.getUserInfoViewModel()
+        header.delegate = self
+
+        viewModel.getProfileImage(url: nil) { (image, response, error) in
+            guard let image = image, error == nil else { return }
+
+            DispatchQueue.main.async {
+                header.profileImageView.image = image.circleMask
+            }
+        }
+
+        header.layoutIfNeeded()
+
+        return header
     }
 
     //MARK: UICollectionViewDelegate
@@ -216,7 +197,7 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(5,5,5,5)
+        return UIEdgeInsetsMake(3,0,0,0)
     }
 
     func collectionViewContentSize() -> CGSize {
@@ -224,16 +205,19 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat{
+        return 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 3
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        let contentWidth: CGFloat = collectionView.bounds.width - (CollectionSize.cellPadding * 2) - CollectionSize.cellPadding * CGFloat(CollectionSize.numberOfColumns - 2)
-        let width = contentWidth/CGFloat(CollectionSize.numberOfColumns)
+        let contentWidth: CGFloat = collectionView.bounds.width - CollectionSize.cellPadding * CGFloat(CollectionSize.numberOfRow - 1)
+        let width = contentWidth/CGFloat(CollectionSize.numberOfRow)
 
         return CGSize(width: width, height: width)
     }
-
 
 }

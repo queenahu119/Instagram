@@ -18,7 +18,6 @@
 		8859FC95219A9A8A00ACA405 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8859FC94219A9A8A00ACA405 /* main.swift */; };
 		8859FC96219BA3C700ACA405 /* MockDataAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885105BA21953B2A000B7E78 /* MockDataAdapter.swift */; };
 		88916F9821B0B59D00696A0E /* ProfileStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88916F9721B0B59D00696A0E /* ProfileStateView.swift */; };
-		88916F9A21B11B7B00696A0E /* ProfileInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88916F9921B11B7B00696A0E /* ProfileInfoView.swift */; };
 		88ADA622219121230073DE4F /* QNAError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ADA621219121230073DE4F /* QNAError.swift */; };
 		9B07B47B20156F7B006D8D04 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B07B47A20156F7B006D8D04 /* ProfileViewController.swift */; };
 		9B0D9A361FFC606A00365E76 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0D9A2E1FFC606700365E76 /* Constants.swift */; };
@@ -89,7 +88,6 @@
 		8859FC902199875E00ACA405 /* FakeResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeResponses.swift; sourceTree = "<group>"; };
 		8859FC94219A9A8A00ACA405 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		88916F9721B0B59D00696A0E /* ProfileStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateView.swift; sourceTree = "<group>"; };
-		88916F9921B11B7B00696A0E /* ProfileInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoView.swift; sourceTree = "<group>"; };
 		88ADA621219121230073DE4F /* QNAError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QNAError.swift; sourceTree = "<group>"; };
 		97854031EA6B22090ED51BF0 /* Pods-InstagramTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstagramTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-InstagramTests/Pods-InstagramTests.release.xcconfig"; sourceTree = "<group>"; };
 		9B07B47A20156F7B006D8D04 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -275,7 +273,6 @@
 				9B7ED7202004BA5C005D9A77 /* UserHeaderTableViewCell.swift */,
 				9B0D9A451FFC647700365E76 /* smallImageCell.swift */,
 				88916F9721B0B59D00696A0E /* ProfileStateView.swift */,
-				88916F9921B11B7B00696A0E /* ProfileInfoView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -568,7 +565,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				88916F9A21B11B7B00696A0E /* ProfileInfoView.swift in Sources */,
 				8859FC95219A9A8A00ACA405 /* main.swift in Sources */,
 				9B1EA8421FFB48B2008ADACD /* AppDelegate.swift in Sources */,
 				9B0D9A3B1FFC606A00365E76 /* User.swift in Sources */,
